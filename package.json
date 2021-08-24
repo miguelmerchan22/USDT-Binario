@@ -1,5 +1,5 @@
 {
-  "name": "smartsitecapital",
+  "name": "usdt-binario",
   "version": "2.0.0",
   "description": "Es un sistema binario en la Blockchain tron",
   "scripts": {
@@ -8,11 +8,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/SITESMART650/BINARIO-SITE"
+    "url": "https://github.com/miguelmerchan22/USDT-Binario"
   },
   "author": "smartsitecapital",
   "license": "Apache 2.0",
-  "homepage": "https://smartsitecapital.ml",
+  "homepage": "https://miguelmerchan22.github.io/USDT-Binario/",
   "dependencies": {
     "@babel/core": "7.8.4",
     "@svgr/webpack": "4.3.3",

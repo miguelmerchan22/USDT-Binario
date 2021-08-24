@@ -1,19 +1,19 @@
 {
   "files": {
-    "main.js": "/staking/static/js/main.c579db96.chunk.js",
-    "main.js.map": "/staking/static/js/main.c579db96.chunk.js.map",
-    "runtime-main.js": "/staking/static/js/runtime-main.91ca37fd.js",
-    "runtime-main.js.map": "/staking/static/js/runtime-main.91ca37fd.js.map",
-    "static/js/2.f643c333.chunk.js": "/staking/static/js/2.f643c333.chunk.js",
-    "static/js/2.f643c333.chunk.js.map": "/staking/static/js/2.f643c333.chunk.js.map",
-    "index.html": "/staking/index.html",
-    "precache-manifest.a42f3d27037a000964050cbb97b1dd1e.js": "/staking/precache-manifest.a42f3d27037a000964050cbb97b1dd1e.js",
-    "service-worker.js": "/staking/service-worker.js",
-    "static/js/2.f643c333.chunk.js.LICENSE.txt": "/staking/static/js/2.f643c333.chunk.js.LICENSE.txt"
+    "main.js": "/USDT-Binario/static/js/main.d271a3c7.chunk.js",
+    "main.js.map": "/USDT-Binario/static/js/main.d271a3c7.chunk.js.map",
+    "runtime-main.js": "/USDT-Binario/static/js/runtime-main.b0a4abe0.js",
+    "runtime-main.js.map": "/USDT-Binario/static/js/runtime-main.b0a4abe0.js.map",
+    "static/js/2.eeaa4c6b.chunk.js": "/USDT-Binario/static/js/2.eeaa4c6b.chunk.js",
+    "static/js/2.eeaa4c6b.chunk.js.map": "/USDT-Binario/static/js/2.eeaa4c6b.chunk.js.map",
+    "index.html": "/USDT-Binario/index.html",
+    "precache-manifest.b808e3e08af9e27f9a08d77a8eb16c38.js": "/USDT-Binario/precache-manifest.b808e3e08af9e27f9a08d77a8eb16c38.js",
+    "service-worker.js": "/USDT-Binario/service-worker.js",
+    "static/js/2.eeaa4c6b.chunk.js.LICENSE.txt": "/USDT-Binario/static/js/2.eeaa4c6b.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
-    "static/js/runtime-main.91ca37fd.js",
-    "static/js/2.f643c333.chunk.js",
-    "static/js/main.c579db96.chunk.js"
+    "static/js/runtime-main.b0a4abe0.js",
+    "static/js/2.eeaa4c6b.chunk.js",
+    "static/js/main.d271a3c7.chunk.js"
   ]
 }
