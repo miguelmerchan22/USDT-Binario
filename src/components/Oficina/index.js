@@ -4,6 +4,7 @@ import Utils from "../../utils";
 import contractAddress from "../Contract";
 
 import cons from "../../cons.js";
+import utils from "../../utils";
 
 export default class Oficina extends Component {
   constructor(props) {

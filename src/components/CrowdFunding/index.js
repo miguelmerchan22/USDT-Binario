@@ -153,10 +153,11 @@ export default class CrowdFunding extends Component {
     //console.log(nameToken1);
 
     var aprovado = await contractSITE.allowance(accountAddress,contractAddress).call();
-    //console.log(aprovado);
-    aprovado = parseInt(aprovado._hex);
+    console.log(aprovado);
+    aprovado = parseInt(aprovado.remaining._hex);
+    //aprovado = parseInt(aprovado._hex);
 
-    //console.log(aprovado);
+    console.log(aprovado);
 
     if (aprovado > 0) {
       aprovado = "Comprar Plan";
@@ -252,8 +253,8 @@ export default class CrowdFunding extends Component {
     var balanceTRX = await window.tronWeb.trx.getBalance();
     balanceTRX = balanceTRX/10**6;
 
-    //var direccioncontract2 = await Utils.contract.tokenPago().call();  
-    var direccioncontract2 = "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t";// USDT contrato o secundario
+    var direccioncontract2 = await Utils.contract.tokenPago().call();  
+    //var direccioncontract2 = "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t";// USDT contrato o secundario
 
     var contractUSDT = await window.tronWeb.contract().at(direccioncontract2);
     var nameToken2 = await contractUSDT.symbol().call();
