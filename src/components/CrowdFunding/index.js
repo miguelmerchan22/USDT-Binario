@@ -72,8 +72,7 @@ export default class CrowdFunding extends Component {
   };
 
   async estado(){
-    var accountAddress =  await window.tronWeb.trx.getAccount();
-    accountAddress = window.tronWeb.address.fromHex(accountAddress.address);
+    var accountAddress =  window.tronWeb.defaultAddress.base58;
     var inversors = await Utils.contract.investors(accountAddress).call();
 
     var precioSITE = this.state.precioSITE
@@ -137,8 +136,7 @@ export default class CrowdFunding extends Component {
 
   async estado2(){
 
-    var accountAddress =  await window.tronWeb.trx.getAccount();
-    accountAddress = window.tronWeb.address.fromHex(accountAddress.address);
+    var accountAddress =  window.tronWeb.defaultAddress.base58;
     var inversors = await Utils.contract.investors(accountAddress).call();
 
     var inicio = accountAddress.substr(0,4);
@@ -295,8 +293,7 @@ export default class CrowdFunding extends Component {
 
     var { balanceSite, balanceTRX, valueUSDT , balance} = this.state;
 
-    var accountAddress =  await window.tronWeb.trx.getAccount();
-    accountAddress = window.tronWeb.address.fromHex(accountAddress.address);
+    var accountAddress =  window.tronWeb.defaultAddress.base58;
 
     var tronUSDT = await window.tronWeb;
     var direccioncontract = await Utils.contract.tokenPricipal().call();
@@ -369,7 +366,7 @@ export default class CrowdFunding extends Component {
           
         }
 
-        if(sponsor !== "T9yD14Nj9j7xAB4dbGeiX9h8unkKHxuWwb"){
+        if(sponsor !== "T9yD14Nj9j7xAB4dbGeiX9h8unkKHxuWwb" && investors.registered){
           if(this.state.deposito === "Upgrade Plan"){
             await Utils.contract.withdrawToDeposit().send();
             await Utils.contract.upGradePlan(valueUSDT).send();

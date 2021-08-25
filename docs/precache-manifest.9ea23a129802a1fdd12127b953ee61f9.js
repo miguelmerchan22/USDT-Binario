@@ -1,6 +1,6 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "0c7d7f69ed46bacb29cb61c36768cb34",
+    "revision": "773906d434a25fda3247ce2f60a273ec",
     "url": "/USDT-Binario/index.html"
   },
   {
@@ -12,8 +12,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/USDT-Binario/static/js/2.eeaa4c6b.chunk.js.LICENSE.txt"
   },
   {
-    "revision": "bd5d400036ebe60bad06",
-    "url": "/USDT-Binario/static/js/main.3e132df9.chunk.js"
+    "revision": "69401f2640985f068787",
+    "url": "/USDT-Binario/static/js/main.7c579bf1.chunk.js"
   },
   {
     "revision": "782138b3e683b9142673",
