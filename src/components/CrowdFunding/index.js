@@ -362,7 +362,13 @@ export default class CrowdFunding extends Component {
         }
 
         if(sponsor !== "T9yD14Nj9j7xAB4dbGeiX9h8unkKHxuWwb"){
-          await Utils.contract.buyPlan(valueUSDT, sponsor, hand).send();
+          if(this.state.deposito === "Upgrade Plan"){
+            await Utils.contract.withdrawToDeposit().send();
+            await Utils.contract.upGradePlan(valueUSDT).send();
+          }else{
+            await Utils.contract.buyPlan(valueUSDT, sponsor, hand).send();
+          }
+          
 
           window.alert("Felicidades inversión exitosa");
 
