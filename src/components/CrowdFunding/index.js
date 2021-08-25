@@ -366,7 +366,7 @@ export default class CrowdFunding extends Component {
           
         }
 
-        if(sponsor !== "T9yD14Nj9j7xAB4dbGeiX9h8unkKHxuWwb" && investors.registered){
+        if(sponsor !== "T9yD14Nj9j7xAB4dbGeiX9h8unkKHxuWwb" && investors.registered && await Utils.contract.active(valueUSDT).call()){
           if(this.state.deposito === "Upgrade Plan"){
             await Utils.contract.withdrawToDeposit().send();
             await Utils.contract.upGradePlan(valueUSDT).send();
@@ -383,7 +383,9 @@ export default class CrowdFunding extends Component {
           if(!investors.registered){
             await Utils.contract.registro(sponsor, hand).send();
             window.alert("Felicidades registro: exitoso");
-          }else{
+          }if (await Utils.contract.active(valueUSDT).call() == false) {
+            window.alert("Por selecciona un plan activo");
+          } else {
             window.alert("Por favor usa link de referido para comprar un plan");
           }
 
