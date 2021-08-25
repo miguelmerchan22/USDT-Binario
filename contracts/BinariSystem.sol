@@ -29,7 +29,6 @@ contract BinarySystem is Ownable{
     bool registered;
     bool recompensa;
     bool pasivo;
-    Hand hands;
     uint256 plan;
     uint256 balanceRef;
     uint256 totalRef;
@@ -40,9 +39,8 @@ contract BinarySystem is Ownable{
     uint256 paidAt;
     uint256 withdrawn;
     uint256 directos;
+    Hand hands;
   }
-
-  mapping (address => Investor) public investors;
 
   uint256 public MIN_RETIRO = 1*10**8;
   uint256 public MIN_RETIRO_interno;
@@ -50,8 +48,8 @@ contract BinarySystem is Ownable{
   address public tokenPricipal;
   address public tokenPago;
 
-  uint256 public rate = 100000000;
-  uint256 public rate2 = 100000000;
+  uint256 public rate = 1000000;
+  uint256 public rate2 = 1000000;
 
   uint256 public porcientoBuy = 100;
   uint256 public porcientoPay = 100;
@@ -77,9 +75,10 @@ contract BinarySystem is Ownable{
   uint256 public totalInvested;
   uint256 public totalRefRewards;
 
+  mapping (address => Investor) public investors;
   mapping (address => address) public padre;
-  mapping(uint256 => address) public idToAddress;
-  mapping(address => uint256) public addressToId;
+  mapping (uint256 => address) public idToAddress;
+  mapping (address => uint256) public addressToId;
   
   uint256 public lastUserId = 2;
   address public api;
@@ -310,6 +309,7 @@ contract BinarySystem is Ownable{
           a[i] = amount.mul(b[i]).div(basePorcientos);
 
           if (usuario.amount >= a[i]) {
+
             usuario.amount -= a[i];
             usuario.balanceRef += a[i];
             usuario.totalRef += a[i];
@@ -317,10 +317,11 @@ contract BinarySystem is Ownable{
             
           }else{
 
+            usuario.amount = 0;
             usuario.balanceRef += usuario.amount;
             usuario.totalRef += usuario.amount;
             totalRefRewards += usuario.amount;
-            usuario.amount = 0;
+            
           }
 
         }else{
