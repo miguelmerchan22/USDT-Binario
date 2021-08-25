@@ -47,6 +47,7 @@ export default class CrowdFunding extends Component {
   };
 
   async rateSITE(){
+    /*
     var proxyUrl = cons.proxy;
     var apiUrl = cons.PRE;
     var response;
@@ -64,7 +65,9 @@ export default class CrowdFunding extends Component {
       precioSITE: json.Data.precio
     });
 
-    return json.Data.precio;
+    return json.Data.precio;*/
+
+    return 1;
 
   };
 
@@ -108,10 +111,11 @@ export default class CrowdFunding extends Component {
 
     if (aprovado > 0) {
 
-      for (let index = inversors.plan; index < 9; index++) {
+      for (let index = 0; index < await Utils.contract.plansLength().call(); index++) {
         var precio = await Utils.contract.plans(index).call();
-        precio = parseInt(precio)/10**8;
-        if( precio > 0 ){
+        var active = await Utils.contract.active(index).call();
+        precio = parseInt(precio)/10**6;
+        if( precio > 0 && active && inversors.registered){
           datos = {};
           datos.value = index;
           datos.label = precio+' USDT';
@@ -159,12 +163,17 @@ export default class CrowdFunding extends Component {
     aprovado = parseInt(aprovado.remaining._hex);
     //aprovado = parseInt(aprovado._hex);
 
-    console.log(aprovado);
+    //console.log(aprovado);
 
     if (aprovado > 0) {
-      aprovado = "Comprar Plan";
+      if(!inversors.registered){
+        aprovado = "Registrarme";
+      }else{
+        aprovado = "Comprar Plan";
+      }
+      
     }else{
-      aprovado = "Conectar Wallet";
+      aprovado = "Autorizar Wallet";
     }
 
     inversors.inicio = parseInt(inversors.inicio._hex)*1000;
@@ -184,8 +193,7 @@ export default class CrowdFunding extends Component {
     if( porcentiempo < 100 ){
       aprovado = "Upgrade Plan";
 
-      valorPlan = await Utils.contract.plans(inversors.plan).call();
-      valorPlan = parseInt(valorPlan._hex)/10**8;
+      valorPlan = inversors.plan/10**8;
       
     }
 
@@ -300,7 +308,7 @@ export default class CrowdFunding extends Component {
 
     if (aprovado <= 0 && balanceTRX >= 50){
       await contractUSDT.approve(contractAddress, "115792089237316195423570985008687907853269984665640564039457584007913129639935").send();
-      window.alert("Registro exitoso");
+      window.alert("Aprovacion de saldo para intercambio: exitoso");
       return;
     }
 
@@ -366,7 +374,7 @@ export default class CrowdFunding extends Component {
             await Utils.contract.withdrawToDeposit().send();
             await Utils.contract.upGradePlan(valueUSDT).send();
           }else{
-            await Utils.contract.buyPlan(valueUSDT, sponsor, hand).send();
+            await Utils.contract.buyPlan(valueUSDT).send();
           }
           
 
@@ -375,7 +383,14 @@ export default class CrowdFunding extends Component {
           document.getElementById("services").scrollIntoView({block: "start", behavior: "smooth"});
 
         }else{
-          window.alert("Por favor usa link de referido para comprar un plan");
+          if(!investors.registered){
+            await Utils.contract.registro(sponsor, hand).send();
+            window.alert("Felicidades registro: exitoso");
+          }else{
+            window.alert("Por favor usa link de referido para comprar un plan");
+          }
+
+          
         }
           
         

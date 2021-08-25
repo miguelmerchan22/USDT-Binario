@@ -3,8 +3,8 @@ import {CopyToClipboard} from 'react-copy-to-clipboard';
 import Utils from "../../utils";
 import contractAddress from "../Contract";
 
-import cons from "../../cons.js";
-import utils from "../../utils";
+//import cons from "../../cons.js";
+//import utils from "../../utils";
 
 export default class Oficina extends Component {
   constructor(props) {
@@ -67,7 +67,7 @@ export default class Oficina extends Component {
   };
 
   async rateSITE(){
-    var proxyUrl = cons.proxy;
+    /*var proxyUrl = cons.proxy;
     var apiUrl = cons.PRE;
     var response;
 
@@ -84,7 +84,9 @@ export default class Oficina extends Component {
       precioSITE: json.Data.precio
     });
 
-    return json.Data.precio;
+    return json.Data.precio;*/
+
+    return 1;
 
   };
 
@@ -153,7 +155,7 @@ export default class Oficina extends Component {
 
     let porcent = await Utils.contract.porcent().call();
     porcent = parseInt(porcent._hex)/100;
-    var valorPlan = usuario.invested*porcent;
+    var valorPlan = (usuario.invested*porcent);// decimales visuales
 
     var progresoUsdt = ((valorPlan-(usuario.invested*porcent-(usuario.withdrawn+usuario.withdrawable+usuario.balanceRef+usuario.almacen)))*100)/valorPlan;
 

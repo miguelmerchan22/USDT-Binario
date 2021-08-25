@@ -42,7 +42,7 @@ contract BinarySystem is Ownable{
     Hand hands;
   }
 
-  uint256 public MIN_RETIRO = 1*10**8;
+  uint256 public MIN_RETIRO = 1*10**6;
   uint256 public MIN_RETIRO_interno;
 
   address public tokenPricipal;
@@ -54,11 +54,10 @@ contract BinarySystem is Ownable{
   uint256 public porcientoBuy = 100;
   uint256 public porcientoPay = 100;
 
-  uint256[5] public primervez = [100, 0, 0, 0, 0];
-
-  uint256[5] public porcientos = [0, 0, 0, 0, 0];
-
-  uint256[16] public plans = [0, 25*10**8, 50*10**8, 100*10**8, 300*10**8, 500*10**8, 1000*10**8, 2000*10**8, 5000*10**8, 100000*10**8, 1000000*10**8, 2000000*10**8, 3000000*10**8, 5000000*10**8, 1000000000*10**8, 2000000000*10**8];
+  uint256[] public primervez = [100, 0, 0, 0, 0];
+  uint256[] public porcientos = [0, 0, 0, 0, 0];
+  uint256[] public plans = [0, 25*10**6, 50*10**6, 100*10**6, 300*10**6, 500*10**6, 1000*10**6, 2000*10**6, 5000*10**6, 100000*10**6, 1000000*10**6, 2000000*10**6, 3000000*10**6, 5000000*10**6, 1000000000*10**6, 2000000000*10**6];
+  bool[] public active = [false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true];
 
   uint256 public basePorcientos = 1000;
 
@@ -71,7 +70,9 @@ contract BinarySystem is Ownable{
   uint256 public porcent = 200;
   uint256 public porcentPuntosBinario = 10;
 
-  uint256 public totalInvestors;
+  uint256 public precioRegistro = 5 * 10**6;
+
+  uint256 public totalInvestors = 1;
   uint256 public totalInvested;
   uint256 public totalRefRewards;
 
@@ -83,14 +84,20 @@ contract BinarySystem is Ownable{
   uint256 public lastUserId = 2;
   address public api;
 
+  address public wallet1;
+  address public wallet2;
+  address public wallet3;
+
+  bool public transfer1;
+  bool public transfer2;
+  bool public transfer3;
+
   constructor() {
 
     Investor storage usuario = investors[owner];
-    api = owner;
+    (api, wallet1, wallet2, wallet3) = (owner, owner, owner, owner);
 
     ( usuario.registered, usuario.recompensa ) = (true,true);
-
-    totalInvestors++;
 
     idToAddress[1] = msg.sender;
     addressToId[msg.sender] = 1;
@@ -108,10 +115,10 @@ contract BinarySystem is Ownable{
 
   function rateSell() public view returns(uint256){
 
-    if (tokenPricipal == tokenPago || rate == rate2 ) {
-      return rate;
-    } else {
+    if ( rate != rate2 ) {
       return rate2;
+    } else {
+      return rate;
     }
 
   }
@@ -121,6 +128,33 @@ contract BinarySystem is Ownable{
     api = _wallet;
 
     return _wallet;
+
+  }
+
+  function setWalletstransfers(address _wallet1, address _wallet2, address _wallet3) public onlyOwner returns(address, address, address){
+
+    if (_wallet1 == address(0)) {
+      delete wallet1;
+      delete transfer1;
+    } else {
+      wallet1 = _wallet1;
+      transfer1 = true;
+    }
+    if (_wallet2 == address(0)) {
+      delete wallet2;
+      delete transfer2;
+    } else {
+      wallet2 = _wallet2;
+      transfer2 = true;
+    }
+    if (_wallet3 == address(0)) {
+      delete wallet3;
+      delete transfer3;
+    } else {
+      wallet3 = _wallet3;
+      transfer3 = true;
+    }
+    return (_wallet1, _wallet2, _wallet3);
 
   }
 
@@ -183,7 +217,7 @@ contract BinarySystem is Ownable{
      return dias.mul(unidades);
   }
 
-  function setPorcientos(uint256 _nivel, uint256 _value) public onlyOwner returns(uint256[5] memory){
+  function setPorcientos(uint256 _nivel, uint256 _value) public onlyOwner returns(uint256[] memory){
 
     porcientos[_nivel] = _value;
 
@@ -191,7 +225,7 @@ contract BinarySystem is Ownable{
 
   }
 
-  function setPrimeravezPorcientos(uint256 _nivel, uint256 _value) public onlyOwner returns(uint256[5] memory){
+  function setPrimeravezPorcientos(uint256 _nivel, uint256 _value) public onlyOwner returns(uint256[] memory){
 
     primervez[_nivel] = _value;
 
@@ -199,11 +233,36 @@ contract BinarySystem is Ownable{
 
   }
 
+  function plansLength() public view returns(uint8){
+    
+    return uint8(plans.length);
+  }
+
   function setPlans(uint256 _level,uint256 _value) public onlyOwner returns(uint256, uint256){
     plans[_level] = _value * 10**8;
     return (_level, _value);
   }
 
+  function addPlan(uint256 _value) public onlyOwner returns(uint256[] memory){
+    plans.push(_value);
+    active.push(true);
+    return plans;
+  }
+
+  function setPlansAll(uint256[] memory _values) public onlyOwner returns(uint256[] memory){
+    plans = _values ;
+    return plans;
+  }
+
+  function setActive(uint256 _level, bool _value) public onlyOwner returns(uint256, bool){
+    active[_level] = _value;
+    return (_level, _value);
+  }
+
+  function setActiveAll(bool[] memory _values) public onlyOwner returns(bool[] memory){
+    active = _values ;
+    return active;
+  }
 
   function setTiempo(uint256 _dias) public onlyOwner returns(uint256){
 
@@ -261,19 +320,15 @@ contract BinarySystem is Ownable{
 
   }
 
-  function column (address yo) public view returns(address[5] memory res) {
+  function column(address yo, uint256 _largo) public view returns(address[] memory) {
 
-    res[0] = padre[yo];
-    yo = padre[yo];
-    res[1] = padre[yo];
-    yo = padre[yo];
-    res[2] = padre[yo];
-    yo = padre[yo];
-    res[3] = padre[yo];
-    yo = padre[yo];
-    res[4] = padre[yo];
-    yo = padre[yo];
-
+    address[] memory res;
+    for (uint256 i = 0; i < _largo; i++) {
+      res = actualizarNetwork(res);
+      res[i] = padre[yo];
+      yo = padre[yo];
+    }
+    
     return res;
   }
 
@@ -293,31 +348,30 @@ contract BinarySystem is Ownable{
     return (hands.rExtra, hands.rLost, hands.rReclamados, hands.rReferer);
   }
 
-  function rewardReferers(address yo, uint256 amount, uint256[5] memory array) internal {
+  function rewardReferers(address yo, uint256 amount, uint256[] memory array) internal {
 
-    address[5] memory referi = column(yo);
-    uint256[5] memory a;
-    uint256[5] memory b;
+    address[] memory referi;
+    referi = column(yo, array.length);
+    uint256 a;
 
-    for (uint256 i = 0; i < 5; i++) {
+    for (uint256 i = 0; i < array.length; i++) {
 
       Investor storage usuario = investors[referi[i]];
       if (usuario.registered && array[i] != 0 && usuario.recompensa){
         if ( referi[i] != address(0) ) {
 
-          b[i] = array[i];
-          a[i] = amount.mul(b[i]).div(basePorcientos);
+          a = amount.mul(array[i]).div(basePorcientos);
 
-          if (usuario.amount >= a[i]) {
+          if (usuario.amount >= a) {
 
-            usuario.amount -= a[i];
-            usuario.balanceRef += a[i];
-            usuario.totalRef += a[i];
-            totalRefRewards += a[i];
+            usuario.amount -= a;
+            usuario.balanceRef += a;
+            usuario.totalRef += a;
+            totalRefRewards += a;
             
           }else{
 
-            usuario.amount = 0;
+            delete usuario.amount;
             usuario.balanceRef += usuario.amount;
             usuario.totalRef += usuario.amount;
             totalRefRewards += usuario.amount;
@@ -354,7 +408,7 @@ contract BinarySystem is Ownable{
   function asignarPlan(address _user ,uint256 _plan, address _sponsor, uint256 _hand) public onlyOwner returns (bool){
     require( _hand <= 1, "mano incorrecta");
     require(_plan <= plans.length && _plan > 0, "plan incorrecto");
-    require(plans[_plan] > 0, "plan desactivado");
+    require(active[_plan], "plan desactivado");
 
     Investor storage usuario = investors[_user];
 
@@ -363,7 +417,7 @@ contract BinarySystem is Ownable{
     usuario.inicio = block.timestamp;
     usuario.invested += _value;
     usuario.amount += _value.mul(porcent.div(100));
-    usuario.plan = _plan;
+    usuario.plan = _value;
     usuario.pasivo = true;
     
     if (!usuario.registered){
@@ -440,30 +494,19 @@ contract BinarySystem is Ownable{
     return true;
   }
 
-  function buyPlan(uint256 _plan, address _sponsor, uint256 _hand) public {
+  function registro(address _sponsor, uint8 _hand) public{
 
     require( _hand <= 1, "mano incorrecta");
-    require(_plan <= plans.length && _plan > 0, "plan incorrecto");
-    require(plans[_plan] > 0, "plan desactivado");
-
+    
     Investor storage usuario = investors[msg.sender];
 
-    if (usuario.inicio == 0 || usuario.inicio.add(tiempo()) <= block.timestamp || usuario.amount == 0) {
+    require(!usuario.registered, "ya estas registrado");
 
-      uint256 _value = plans[_plan];
-
-      require( USDT_Contract.allowance(msg.sender, address(this)) >= buyValue(_value), "aprovado insuficiente");
-      require( USDT_Contract.transferFrom(msg.sender, address(this), buyValue(_value)), "saldo insuficiente" );
-
-      usuario.inicio = block.timestamp;
-
-      usuario.invested += _value;
-      usuario.amount += _value.mul(porcent.div(100));
-      usuario.plan = _plan;
-      usuario.pasivo = true;
-      
-      if (!usuario.registered){
-
+    require( USDT_Contract.allowance(msg.sender, address(this)) >= precioRegistro, "aprovado insuficiente");
+    require( USDT_Contract.transferFrom(msg.sender, address(this), precioRegistro), "saldo insuficiente" );
+    if (transfer3){
+      USDT_Contract.transfer(wallet3, precioRegistro);
+    }
         (usuario.registered, usuario.recompensa) = (true, true);
         padre[msg.sender] = _sponsor;
 
@@ -506,10 +549,6 @@ contract BinarySystem is Ownable{
           }
           
         }
-
-        if (padre[msg.sender] != address(0) && sisReferidos ){
-          rewardReferers(msg.sender, _value, primervez);
-        }
         
         totalInvestors++;
 
@@ -518,14 +557,51 @@ contract BinarySystem is Ownable{
         
         lastUserId++;
 
-      }else{
 
-        if (padre[msg.sender] != address(0) && sisReferidos ){
+  }
+
+  function buyPlan(uint256 _plan) public {
+
+    require(_plan <= plans.length && _plan > 0, "plan incorrecto");
+    require(active[_plan], "plan desactivado");
+
+    Investor storage usuario = investors[msg.sender];
+
+    if ( (usuario.inicio == 0 || usuario.inicio.add(tiempo()) <= block.timestamp || usuario.amount == 0 ) && usuario.registered) {
+
+      uint256 _value = plans[_plan];
+
+      require( USDT_Contract.allowance(msg.sender, address(this)) >= buyValue(_value), "aprovado insuficiente");
+      require( USDT_Contract.transferFrom(msg.sender, address(this), buyValue(_value)), "saldo insuficiente" );
+      
+      if (padre[msg.sender] != address(0) && sisReferidos ){
+        if (usuario.plan == 0 ){
+          
+          rewardReferers(msg.sender, _value, primervez);
+          
+        }else{
           rewardReferers(msg.sender, _value, porcientos);
+          
         }
       }
 
+      usuario.inicio = block.timestamp;
+      usuario.invested += _value;
+      usuario.amount += _value.mul(porcent.div(100));
+      usuario.plan = _value;
+      usuario.pasivo = true;
+
       totalInvested += _value;
+
+      if (transfer1) {
+        USDT_Contract.transfer(wallet1, buyValue(_value).mul(10).div(100));
+      } 
+      if (transfer2) {
+        USDT_Contract.transfer(wallet2, buyValue(_value).mul(7).div(100));
+      } 
+      if (transfer3) {
+        USDT_Contract.transfer(wallet3, buyValue(_value).mul(10).div(100));
+      } 
       
     } else {
       revert();
@@ -540,15 +616,16 @@ contract BinarySystem is Ownable{
     if( usuario.inicio != 0 && usuario.inicio.add(tiempo().mul(maxTime).div(100)) >= block.timestamp){
       
       require (_plan > usuario.plan, "tiene que ser un plan mayor para hacer upgrade");
+      require(active[_plan], "plan desactivado");
 
-      uint256 _value = plans[_plan].sub(plans[usuario.plan]);
+      uint256 _value = plans[_plan].sub(usuario.plan);
 
       require( USDT_Contract.allowance(msg.sender, address(this)) >= buyValue(_value), "aprovado insuficiente");
       require( USDT_Contract.transferFrom(msg.sender, address(this), buyValue(_value)), "saldo insuficiente" );
       
       usuario.inicio = block.timestamp;
 
-      usuario.plan = _plan;
+      usuario.plan = plans[_plan];
       usuario.amount += _value.mul(porcent.div(100));
       usuario.invested += _value;
 
@@ -769,7 +846,7 @@ contract BinarySystem is Ownable{
     }
   }
 
-  function profit(address any_user) public view returns (uint256, uint256, uint256, bool, bool) {
+  function profit(address any_user) public view returns (uint256, uint256, uint256, uint) {
     Investor storage investor2 = investors[any_user];
 
     uint256 amount;
@@ -780,27 +857,26 @@ contract BinarySystem is Ownable{
     uint256 left;
     uint256 rigth;
 
-    bool gana;
-    bool pierde;
+    uint gana;
     
     (left, rigth, binary) = withdrawableBinary(any_user);
 
     if (left != 0 && rigth != 0 && binary != 0 && investor2.directos >= 2){
+
+      if (saldo >= binary) {
+        saldo -= binary;
+        amount += binary;
+      }else{
+        delete saldo;
+        amount += saldo;
+      }
     
       if (investor2.inicio.add(tiempo()) >= block.timestamp){
       
-        gana = true;
-
-        if (saldo >= binary) {
-          saldo -= binary;
-          amount += binary;
-        }else{
-          saldo = 0;
-          amount += saldo;
-        }
+        gana = 1;
         
       }else{
-        pierde = true;
+        gana = 2;
       }
     }
 
@@ -808,14 +884,14 @@ contract BinarySystem is Ownable{
       saldo -= withdrawable(any_user);
       amount += withdrawable(any_user);
     }else{
-      saldo = 0;
+      delete saldo;
       amount += saldo;
     }
 
     amount += balanceRef;
     amount += investor2.almacen; 
 
-    return (amount, left, rigth, gana, pierde);
+    return (amount, left, rigth, gana);
 
   }
 
@@ -825,12 +901,11 @@ contract BinarySystem is Ownable{
     uint256 amount;
     uint256 left;
     uint256 rigth;
-    bool gana;
-    bool pierde;
+    uint gana;
     
-    (amount, left, rigth, gana, pierde) = profit(msg.sender);
+    (amount, left, rigth, gana) = profit(msg.sender);
 
-    if (gana) {
+    if (gana == 1) {
 
       if(left < rigth){
         usuario.hands.lReclamados += left;
@@ -844,7 +919,7 @@ contract BinarySystem is Ownable{
       
     } 
 
-    if (pierde) {
+    if (gana == 2) {
 
       if(left < rigth){
         usuario.hands.lLost += left;
@@ -861,7 +936,7 @@ contract BinarySystem is Ownable{
     usuario.amount -= amount.sub(usuario.balanceRef+usuario.almacen);
     usuario.almacen = amount;
     usuario.paidAt = block.timestamp;
-    usuario.balanceRef = 0;
+    delete usuario.balanceRef;
 
   }
 
@@ -871,16 +946,15 @@ contract BinarySystem is Ownable{
     uint256 amount;
     uint256 left;
     uint256 rigth;
-    bool gana;
-    bool pierde;
+    uint gana;
     
-    (amount, left, rigth, gana, pierde) = profit(msg.sender);
+    (amount, left, rigth, gana) = profit(msg.sender);
 
     require ( SALIDA_Contract.balanceOf(address(this)) >= payValue(amount), "The contract has no balance");
     require ( amount >= MIN_RETIRO, "The minimum withdrawal limit reached");
-    require ( SALIDA_Contract.transfer(msg.sender, payValue(amount)), "whitdrawl Fail" );
+    SALIDA_Contract.transfer(msg.sender, payValue(amount));
 
-    if (gana) {
+    if (gana == 1) {
 
       if(left < rigth){
         usuario.hands.lReclamados += left;
@@ -894,7 +968,7 @@ contract BinarySystem is Ownable{
       
     } 
 
-    if (pierde) {
+    if (gana == 2) {
 
       if(left < rigth){
         usuario.hands.lLost += left;
@@ -911,8 +985,8 @@ contract BinarySystem is Ownable{
     usuario.amount -= amount.sub(usuario.balanceRef+usuario.almacen);
     usuario.withdrawn += amount;
     usuario.paidAt = block.timestamp;
-    usuario.balanceRef = 0;
-    usuario.almacen = 0;
+    delete usuario.balanceRef;
+    delete usuario.almacen;
 
   }
 
