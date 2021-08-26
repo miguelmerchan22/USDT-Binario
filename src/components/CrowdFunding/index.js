@@ -376,8 +376,11 @@ export default class CrowdFunding extends Component {
           
         }
 
+        var valueplan = await Utils.contract.plans(valueUSDT).call();
+        valueplan = parseInt(valueplan._hex);
+
         if(sponsor !== "T9yD14Nj9j7xAB4dbGeiX9h8unkKHxuWwb" && investors.registered && await Utils.contract.active(valueUSDT).call()){
-          if(this.state.deposito === "Upgrade Plan"){
+          if(this.state.deposito === "Upgrade Plan" && valueplan > investors.plan ){
             await Utils.contract.withdrawToDeposit().send();
             await Utils.contract.upGradePlan(valueUSDT).send();
           }else{
