@@ -386,8 +386,10 @@ export default class CrowdFunding extends Component {
           }else{
             var userWithdrable = await Utils.contract.withdrawable(accountAddress).call();
             userWithdrable = parseInt(userWithdrable.amount._hex);
+            var MIN_RETIRO = await Utils.contract.MIN_RETIRO().call();
+            MIN_RETIRO = parseInt(MIN_RETIRO._hex);
 
-            if (userWithdrable > await Utils.contract.MIN_RETIRO().call()){
+            if (userWithdrable > MIN_RETIRO){
               window.alert("Va comprar plan de menor o igual valor debe retirar lo disponible para continuar.");
               if(window.confirm("¿Desea realizar el retiro de su disponible?.")){
                 await Utils.contract.withdraw().send();

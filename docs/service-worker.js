@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/USDT-Binario/precache-manifest.f56e219a877da9064f718f0760c8ba03.js"
+  "/USDT-Binario/precache-manifest.52c3a8156c95c1c52895ec46731cd03e.js"
 );
 
 self.addEventListener('message', (event) => {
