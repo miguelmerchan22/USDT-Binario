@@ -384,7 +384,7 @@ export default class CrowdFunding extends Component {
             await Utils.contract.registro(sponsor, hand).send();
             window.alert("Felicidades registro: exitoso");
           }if (await Utils.contract.active(valueUSDT).call() == false) {
-            window.alert("Por selecciona un plan activo");
+            window.alert("Por favor selecciona un plan activo");
           } else {
             window.alert("Por favor usa link de referido para comprar un plan");
           }

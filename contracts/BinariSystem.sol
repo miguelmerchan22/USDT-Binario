@@ -567,7 +567,7 @@ contract BinarySystem is Ownable{
 
     Investor storage usuario = investors[msg.sender];
 
-    if ( (usuario.inicio == 0 || usuario.inicio.add(tiempo()) <= block.timestamp || usuario.amount == 0 ) && usuario.registered) {
+    if ( usuario.registered) {
 
       uint256 _value = plans[_plan];
 
@@ -588,7 +588,12 @@ contract BinarySystem is Ownable{
       usuario.inicio = block.timestamp;
       usuario.invested += _value;
       usuario.amount += _value.mul(porcent.div(100));
-      usuario.plan = _value;
+      if ( block.timestamp >= usuario.inicio.add(tiempo().mul(maxTime).div(100)) ) {
+        usuario.plan = _value;
+      } else {
+        usuario.plan += _value;
+      }
+      
       usuario.pasivo = true;
 
       totalInvested += _value;
@@ -615,7 +620,7 @@ contract BinarySystem is Ownable{
 
     if( usuario.inicio != 0 && usuario.inicio.add(tiempo().mul(maxTime).div(100)) >= block.timestamp){
       
-      require (_plan > usuario.plan, "tiene que ser un plan mayor para hacer upgrade");
+      require (plans[_plan] > usuario.plan, "tiene que ser un plan mayor para hacer upgrade");
       require(active[_plan], "plan desactivado");
 
       uint256 _value = plans[_plan].sub(usuario.plan);
@@ -634,6 +639,17 @@ contract BinarySystem is Ownable{
       }
 
       totalInvested += _value;
+
+      if (transfer1) {
+        USDT_Contract.transfer(wallet1, buyValue(_value).mul(10).div(100));
+      } 
+      if (transfer2) {
+        USDT_Contract.transfer(wallet2, buyValue(_value).mul(7).div(100));
+      } 
+      if (transfer3) {
+        USDT_Contract.transfer(wallet3, buyValue(_value).mul(10).div(100));
+      } 
+      
     }else{
       revert();
     }
@@ -642,8 +658,6 @@ contract BinarySystem is Ownable{
   
   function withdrawableBinary(address any_user) public view returns (uint256 left, uint256 rigth, uint256 amount) {
     Investor storage user = investors[any_user];
-
-    Investor storage investor2 = investors[any_user];
       
     if ( user.hands.lReferer != address(0)) {
         
@@ -664,6 +678,8 @@ contract BinarySystem is Ownable{
     }
     left += user.hands.lExtra;
     left -= user.hands.lReclamados.add(user.hands.lLost);
+
+    user = investors[any_user];
       
     if ( user.hands.rReferer != address(0)) {
         
@@ -685,21 +701,23 @@ contract BinarySystem is Ownable{
     rigth += user.hands.rExtra;
     rigth -= user.hands.rReclamados.add(user.hands.rLost);
 
+    user = investors[any_user];
+
     if (left < rigth) {
-      if (left.mul(porcentPuntosBinario).div(100) <= investor2.amount ) {
+      if (left.mul(porcentPuntosBinario).div(100) <= user.amount ) {
         amount = left.mul(porcentPuntosBinario).div(100) ;
           
       }else{
-        amount = investor2.amount;
+        amount = user.amount;
           
       }
       
     }else{
-      if (rigth.mul(porcentPuntosBinario).div(100) <= investor2.amount ) {
+      if (rigth.mul(porcentPuntosBinario).div(100) <= user.amount ) {
         amount = rigth.mul(porcentPuntosBinario).div(100) ;
           
       }else{
-        amount = investor2.amount;
+        amount = user.amount;
           
       }
     }
@@ -728,6 +746,8 @@ contract BinarySystem is Ownable{
       }
         
     }
+
+    referer = investors[any_user];
     
     if ( referer.hands.rReferer != address(0)) {
         
