@@ -380,7 +380,7 @@ export default class CrowdFunding extends Component {
         valueplan = parseInt(valueplan._hex);
 
         if(sponsor !== "T9yD14Nj9j7xAB4dbGeiX9h8unkKHxuWwb" && investors.registered && await Utils.contract.active(valueUSDT).call()){
-          if( valueplan > investors.plan ){
+          if( valueplan > investors.plan && investors.plan > 0){
             await Utils.contract.withdrawToDeposit().send();
             await Utils.contract.upGradePlan(valueUSDT).send();
           }else{
@@ -395,8 +395,11 @@ export default class CrowdFunding extends Component {
                 await Utils.contract.withdraw().send();
                 await Utils.contract.buyPlan(valueUSDT).send();
               }else{
-                window.alert("Va a ccontinuar sin hacer un retiro entonces reinvertira el disponible en el sistema de forma automatica.");
-                await Utils.contract.buyPlan(valueUSDT).send();
+                if(window.confirm("¿Desea ccontinuar sin hacer un retiro?, si lo hace se reinvertira el disponible en el sistema de forma automatica.")){
+                  await Utils.contract.buyPlan(valueUSDT).send();
+                }else{
+                  return;
+                }
               }
             }else{
               await Utils.contract.buyPlan(valueUSDT).send();
