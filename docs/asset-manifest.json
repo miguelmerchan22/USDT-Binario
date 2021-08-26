@@ -1,19 +1,19 @@
 {
   "files": {
-    "main.js": "/USDT-Binario/static/js/main.69c758c9.chunk.js",
-    "main.js.map": "/USDT-Binario/static/js/main.69c758c9.chunk.js.map",
+    "main.js": "/USDT-Binario/static/js/main.749a241b.chunk.js",
+    "main.js.map": "/USDT-Binario/static/js/main.749a241b.chunk.js.map",
     "runtime-main.js": "/USDT-Binario/static/js/runtime-main.b0a4abe0.js",
     "runtime-main.js.map": "/USDT-Binario/static/js/runtime-main.b0a4abe0.js.map",
     "static/js/2.eeaa4c6b.chunk.js": "/USDT-Binario/static/js/2.eeaa4c6b.chunk.js",
     "static/js/2.eeaa4c6b.chunk.js.map": "/USDT-Binario/static/js/2.eeaa4c6b.chunk.js.map",
     "index.html": "/USDT-Binario/index.html",
-    "precache-manifest.6d5844866fce75765da7ad4720588da1.js": "/USDT-Binario/precache-manifest.6d5844866fce75765da7ad4720588da1.js",
+    "precache-manifest.ed7be0fa9074f70bc2f7b268ba564c8c.js": "/USDT-Binario/precache-manifest.ed7be0fa9074f70bc2f7b268ba564c8c.js",
     "service-worker.js": "/USDT-Binario/service-worker.js",
     "static/js/2.eeaa4c6b.chunk.js.LICENSE.txt": "/USDT-Binario/static/js/2.eeaa4c6b.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.b0a4abe0.js",
     "static/js/2.eeaa4c6b.chunk.js",
-    "static/js/main.69c758c9.chunk.js"
+    "static/js/main.749a241b.chunk.js"
   ]
 }

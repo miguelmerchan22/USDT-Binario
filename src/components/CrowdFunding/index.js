@@ -100,8 +100,12 @@ export default class CrowdFunding extends Component {
     var aprovado = await contractSITE.allowance(accountAddress,contractAddress).call();
     
     //aprovado = parseInt(aprovado._hex);
-    aprovado = parseInt(aprovado.remaining._hex);
-
+    if(aprovado.remaining){
+      aprovado = parseInt(aprovado.remaining._hex);
+    }else{
+      aprovado = parseInt(aprovado._hex);
+    }
+    
     if(porcentiempo >= 100){
       inversors.plan = 1;
     }else{
@@ -110,7 +114,9 @@ export default class CrowdFunding extends Component {
 
     if (aprovado > 0) {
 
-      for (let index = 0; index < await Utils.contract.plansLength().call(); index++) {
+      var top = await Utils.contract.plansLength().call();
+
+      for (let index = 0; index < top; index++) {
         var precio = await Utils.contract.plans(index).call();
         var active = await Utils.contract.active(index).call();
         precio = parseInt(precio)/10**6;
@@ -157,9 +163,13 @@ export default class CrowdFunding extends Component {
     //console.log(nameToken1);
 
     var aprovado = await contractSITE.allowance(accountAddress,contractAddress).call();
-    console.log(aprovado);
-    aprovado = parseInt(aprovado.remaining._hex);
-    //aprovado = parseInt(aprovado._hex);
+    //console.log(aprovado);
+
+    if(aprovado.remaining){
+      aprovado = parseInt(aprovado.remaining._hex);
+    }else{
+      aprovado = parseInt(aprovado._hex);
+    }
 
     //console.log(aprovado);
 
@@ -383,7 +393,7 @@ export default class CrowdFunding extends Component {
           if(!investors.registered){
             await Utils.contract.registro(sponsor, hand).send();
             window.alert("Felicidades registro: exitoso");
-          }if (await Utils.contract.active(valueUSDT).call() == false) {
+          }if (await Utils.contract.active(valueUSDT).call() === false) {
             window.alert("Por favor selecciona un plan activo");
           } else {
             window.alert("Por favor usa link de referido para comprar un plan");
