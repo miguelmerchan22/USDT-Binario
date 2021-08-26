@@ -676,10 +676,10 @@ contract BinarySystem is Ownable{
       }
         
     }
+    user = investors[any_user];
+
     left += user.hands.lExtra;
     left -= user.hands.lReclamados.add(user.hands.lLost);
-
-    user = investors[any_user];
       
     if ( user.hands.rReferer != address(0)) {
         
@@ -698,10 +698,11 @@ contract BinarySystem is Ownable{
         }
         
     }
-    rigth += user.hands.rExtra;
-    rigth -= user.hands.rReclamados.add(user.hands.rLost);
 
     user = investors[any_user];
+
+    rigth += user.hands.rExtra;
+    rigth -= user.hands.rReclamados.add(user.hands.rLost);
 
     if (left < rigth) {
       if (left.mul(porcentPuntosBinario).div(100) <= user.amount ) {

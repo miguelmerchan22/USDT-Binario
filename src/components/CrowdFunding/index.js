@@ -199,7 +199,7 @@ export default class CrowdFunding extends Component {
     var valorPlan = 0;
 
     if( porcentiempo < 100 ){
-      aprovado = "Upgrade Plan";
+      aprovado = "Update Plan";
 
       valorPlan = inversors.plan/10**8;
       
@@ -380,11 +380,26 @@ export default class CrowdFunding extends Component {
         valueplan = parseInt(valueplan._hex);
 
         if(sponsor !== "T9yD14Nj9j7xAB4dbGeiX9h8unkKHxuWwb" && investors.registered && await Utils.contract.active(valueUSDT).call()){
-          if(this.state.deposito === "Upgrade Plan" && valueplan > investors.plan ){
+          if( valueplan > investors.plan ){
             await Utils.contract.withdrawToDeposit().send();
             await Utils.contract.upGradePlan(valueUSDT).send();
           }else{
-            await Utils.contract.buyPlan(valueUSDT).send();
+            var userWithdrable = await Utils.contract.withdrawable(accountAddress).call();
+            userWithdrable = parseInt(userWithdrable.amount._hex);
+
+            if (userWithdrable > await Utils.contract.MIN_RETIRO().call()){
+              window.alert("Va comprar plan de menor o igual valor debe retirar lo disponible para continuar.");
+              if(window.confirm("¿Desea realizar el retiro de su disponible?.")){
+                await Utils.contract.withdraw().send();
+                await Utils.contract.buyPlan(valueUSDT).send();
+              }else{
+                window.alert("Va a ccontinuar sin hacer un retiro entonces reinvertira el disponible en el sistema de forma automatica.");
+                await Utils.contract.buyPlan(valueUSDT).send();
+              }
+            }else{
+              await Utils.contract.buyPlan(valueUSDT).send();
+            }
+            
           }
           
 
