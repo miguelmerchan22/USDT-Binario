@@ -66,9 +66,14 @@ contract BinarySystem is Ownable{
 
   uint256 public dias = 1;
   uint256 public unidades = 86400;
+
   uint256 public maxTime = 90;
   uint256 public porcent = 200;
+
   uint256 public porcentPuntosBinario = 10;
+
+  uint256 public descuento = 100;
+  uint256 public personas = 2;
 
   uint256 public precioRegistro = 5 * 10**6;
 
@@ -128,6 +133,15 @@ contract BinarySystem is Ownable{
     api = _wallet;
 
     return _wallet;
+
+  }
+
+  function setDescuentoPorNoTrabajo(uint256 _porcentajePago, uint256 _personasBinario) public onlyOwner returns(uint256, uint256){
+
+    descuento = _porcentajePago;
+    personas = _personasBinario;
+
+    return (porcent.mul(_porcentajePago).div(100), _personasBinario);
 
   }
 
@@ -973,7 +987,12 @@ contract BinarySystem is Ownable{
 
     require ( SALIDA_Contract.balanceOf(address(this)) >= payValue(amount), "The contract has no balance");
     require ( amount >= MIN_RETIRO, "The minimum withdrawal limit reached");
-    SALIDA_Contract.transfer(msg.sender, payValue(amount));
+    if( usuario.directos >= personas ){
+      SALIDA_Contract.transfer(msg.sender, payValue(amount));
+    }else{
+      SALIDA_Contract.transfer(msg.sender, payValue(amount).mul(descuento).div(100));
+    }
+    
 
     if (gana == 1) {
 
