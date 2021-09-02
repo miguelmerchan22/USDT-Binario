@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import Utils from "../../utils";
 import contractAddress from "../Contract";
 
-import cons from "../../cons.js";
+//import cons from "../../cons.js";
 
 export default class Datos extends Component {
   constructor(props) {
@@ -12,7 +12,7 @@ export default class Datos extends Component {
       totalInvestors: 0,
       totalInvested: 0,
       totalRefRewards: 0,
-      precioSITE: 0,
+      precioSITE: 1,
     };
 
     this.totalInvestors = this.totalInvestors.bind(this);
@@ -25,6 +25,7 @@ export default class Datos extends Component {
   };
 
   async rateSITE(){
+    /*
     var proxyUrl = cons.proxy;
     var apiUrl = cons.PRE;
     var response;
@@ -42,13 +43,14 @@ export default class Datos extends Component {
       precioSITE: json.Data.precio
     });
 
-    return json.Data.precio;
+    return json.Data.precio;*/
+    return 1;
 
   };
 
   async totalInvestors() {
 
-    await this.rateSITE();
+    //await this.rateSITE();
 
     let esto = await Utils.contract.setstate().call();
 
@@ -78,12 +80,12 @@ export default class Datos extends Component {
         </div>
 
         <div className="col-lg-4 col-12 text-center">
-          <span data-toggle="counter-up">{(totalInvested/this.state.precioSITE).toFixed(2)} SITE</span>
+          <span data-toggle="counter-up">{(totalInvested/this.state.precioSITE).toFixed(2)} USDT</span>
           <p>Invertido en Plataforma</p>
         </div>
 
         <div className="col-lg-4 col-12 text-center">
-          <span data-toggle="counter-up">{(totalRefRewards/this.state.precioSITE).toFixed(2)} SITE</span>
+          <span data-toggle="counter-up">{(totalRefRewards/this.state.precioSITE).toFixed(2)} USDT</span>
           <p>Total Recompensas por Referidos</p>
         </div>
 

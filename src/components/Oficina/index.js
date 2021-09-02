@@ -21,7 +21,7 @@ export default class Oficina extends Component {
       my: 0,
       almacen: 0,
       withdrawn: 0,
-      precioSITE: 0,
+      precioSITE: 1,
       valueSITE: 0,
       valueUSDT: 0,
       personasIzquierda: 0,
@@ -133,7 +133,7 @@ export default class Oficina extends Component {
 
     //console.log(usuario);
 
-    usuario.inicio = parseInt(usuario.inicio._hex)*1000;
+    usuario.inicio = 1000;
     usuario.amount = parseInt(usuario.amount._hex);
     usuario.invested = parseInt(usuario.invested);
     usuario.withdrawn = parseInt(usuario.withdrawn._hex);
@@ -143,7 +143,7 @@ export default class Oficina extends Component {
     usuario.totalRef = parseInt(usuario.totalRef._hex);
     usuario.paidAt = parseInt(usuario.paidAt._hex);
     usuario.plan = parseInt(usuario.plan._hex);
-    usuario.withdrawable = parseInt(usuario.withdrawable.amount._hex);
+    usuario.withdrawable = parseInt(usuario.withdrawable._hex);
 
     //console.log(usuario);
 
@@ -185,11 +185,11 @@ export default class Oficina extends Component {
 
   async Investors2() {
 
-    var precioSITE = await this.rateSITE();
+    //var precioSITE = await this.rateSITE();
 
-    this.setState({
+    /*this.setState({
       precioSITE: precioSITE
-    });
+    });*/
 
   };
 
@@ -381,7 +381,7 @@ export default class Oficina extends Component {
               
               <h4 className="title"><a href="#services">Disponible {available} USDT</a></h4>
                 
-              <button type="button" className="btn btn-info d-block text-center mx-auto mt-1" onClick={() => this.withdraw()}>Retirar ~ {(available/this.state.precioSITE).toFixed(2)} SITE</button>
+              <button type="button" className="btn btn-info d-block text-center mx-auto mt-1" onClick={() => this.withdraw()}>Retirar ~ {(available/this.state.precioSITE).toFixed(2)} USDT</button>
                  
               
               <hr></hr>
@@ -394,7 +394,6 @@ export default class Oficina extends Component {
               <div className="icon"><i className="ion-ios-analytics-outline" style={{color: '#ff689b'}}></i></div>
               <p className="description">Bonus </p>
               <h4 className="title"><a href="#services">{(this.state.balanceRef+this.state.bonusBinario).toFixed(2)} USDT</a></h4>
-              <p>(~ {(this.state.balanceRef+this.state.bonusBinario/this.state.precioSITE).toFixed(2)} SITE)</p>
               <hr></hr>
               <p className="description">({this.state.directos}) Referidos directos <b>{(this.state.balanceRef).toFixed(2)} USDT</b> </p>
               <p className="description">({this.state.personasDerecha+this.state.personasIzquierda}) Red binaria <b>{(this.state.bonusBinario).toFixed(2)} USDT</b> </p>

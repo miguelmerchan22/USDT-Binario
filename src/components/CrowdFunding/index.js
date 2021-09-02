@@ -20,7 +20,7 @@ export default class CrowdFunding extends Component {
       partner: "Cargando...",
       balanceTRX: "Cargando...",
       balanceUSDT: "Cargando...",
-      precioSITE: 0,
+      precioSITE: 1,
       valueUSDT: 0,
       hand: 0
 
@@ -75,19 +75,13 @@ export default class CrowdFunding extends Component {
     var accountAddress =  window.tronWeb.defaultAddress.base58;
     var inversors = await Utils.contract.investors(accountAddress).call();
 
-    var precioSITE = this.state.precioSITE
-
-    if (precioSITE === 0){
-      precioSITE = await this.rateSITE();
-    }
-
     var options = [];
 
     var datos = {};
 
     inversors.plan = parseInt(inversors.plan._hex);
 
-    inversors.inicio = parseInt(inversors.inicio._hex)*1000;
+    inversors.inicio = 1000;
     
     var tiempo = await Utils.contract.tiempo().call();
     tiempo = parseInt(tiempo._hex)*1000;
@@ -133,11 +127,9 @@ export default class CrowdFunding extends Component {
     }
 
     this.setState({
-      precioSITE: precioSITE,
       options: options
     });
 
-    this.rateSITE();
   }
 
   async estado2(){
@@ -184,7 +176,7 @@ export default class CrowdFunding extends Component {
       aprovado = "Autorizar Wallet";
     }
 
-    inversors.inicio = parseInt(inversors.inicio._hex)*1000;
+    inversors.inicio = 1000;
     
     var tiempo = await Utils.contract.tiempo().call();
     tiempo = parseInt(tiempo._hex)*1000;
@@ -382,16 +374,16 @@ export default class CrowdFunding extends Component {
         if(sponsor !== "T9yD14Nj9j7xAB4dbGeiX9h8unkKHxuWwb" && investors.registered && await Utils.contract.active(valueUSDT).call()){
           if( valueplan > investors.plan && investors.plan > 0){
             await Utils.contract.withdrawToDeposit().send();
-            await Utils.contract.upGradePlan(valueUSDT).send();
           }else{
             var userWithdrable = await Utils.contract.withdrawable(accountAddress).call();
-            userWithdrable = parseInt(userWithdrable.amount._hex);
+            userWithdrable = parseInt(userWithdrable._hex);
             var MIN_RETIRO = await Utils.contract.MIN_RETIRO().call();
             MIN_RETIRO = parseInt(MIN_RETIRO._hex);
 
             if (userWithdrable > MIN_RETIRO){
               window.alert("Va comprar plan de menor o igual valor debe retirar lo disponible para continuar.");
               if(window.confirm("¿Desea realizar el retiro de su disponible?.")){
+                await Utils.contract.withdrawToDeposit().send();
                 await Utils.contract.withdraw().send();
                 await Utils.contract.buyPlan(valueUSDT).send();
               }else{

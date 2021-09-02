@@ -4,6 +4,6 @@ const PRE = "https://precio-site.herokuapp.com/api/v1/servicio/precio/v2/SITE";
 
 const WS = "T9yD14Nj9j7xAB4dbGeiX9h8unkKHxuWwb";//T9yD14Nj9j7xAB4dbGeiX9h8unkKHxuWwb recibe los huerfanos por defecto
 
-const SC = "TAyJXKuAwPwzTsbpdWGyC8H75SMvKvKPLP";// direccion del contrato
+const SC = "TSCD7yua4jreMQjMTzX4nLfBucnV3m8AvQ";// direccion del contrato
 
 export default {proxy, WS,  SC, PRE};
