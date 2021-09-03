@@ -370,20 +370,24 @@ contract BinarySystem is Ownable{
     return (hands.rExtra, hands.rLost, hands.rReclamados, hands.rReferer);
   }
 
-  function depositos(address _user) public view returns(uint256[] memory, bool[] memory, bool[] memory, uint256 ){
+  function depositos(address _user) public view returns(uint256[] memory, uint256[] memory, bool[] memory, bool[] memory, uint256 ){
     Investor storage usuario = investors[_user];
 
     uint256[] memory amount;
+    uint256[] memory time;
     bool[] memory pasive;
     bool[] memory activo;
     uint256 total;
     
      for (uint i = 0; i < usuario.depositos.length; i++) {
        amount = actualizarArrayUint256(amount);
+       time = actualizarArrayUint256(time);
        pasive = actualizarArrayBool(pasive);
        activo = actualizarArrayBool(activo);
 
        Deposito storage dep = usuario.depositos[i];
+
+       time[i] = dep.inicio;
       
       uint finish = dep.inicio + tiempo();
       uint since = usuario.paidAt > dep.inicio ? usuario.paidAt : dep.inicio;
@@ -401,7 +405,7 @@ contract BinarySystem is Ownable{
 
      }
 
-     return (amount, pasive, activo, total);
+     return (amount, time, pasive, activo, total);
 
   }
 
@@ -882,11 +886,12 @@ contract BinarySystem is Ownable{
   function withdrawable(address any_user) public view returns (uint256) {
     
     uint256[] memory amount;
+    uint256[] memory time;
     bool[] memory pasive;
     bool[] memory activo;
     uint256 total;
 
-    (amount, pasive, activo, total) = depositos(any_user);
+    (amount, time, pasive, activo, total) = depositos(any_user);
 
     return total;
   }

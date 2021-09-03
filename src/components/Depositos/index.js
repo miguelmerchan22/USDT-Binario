@@ -6,7 +6,7 @@ import contractAddress from "../Contract";
 //import cons from "../../cons.js";
 //import utils from "../../utils";
 
-export default class Oficina extends Component {
+export default class Depositos extends Component {
   constructor(props) {
     super(props);
 
@@ -131,8 +131,10 @@ export default class Oficina extends Component {
     var contractUSDT = await tronUSDT.contract().at(direccioncontract); 
     var decimales = await contractUSDT.decimals().call();
 
-    //console.log(usuario);
+    
+    
 
+    usuario.inicio = 1000;
     usuario.amount = parseInt(usuario.amount._hex);
     usuario.invested = parseInt(usuario.invested);
     usuario.withdrawn = parseInt(usuario.withdrawn._hex);
@@ -144,16 +146,77 @@ export default class Oficina extends Component {
     usuario.plan = parseInt(usuario.plan._hex);
     usuario.withdrawable = parseInt(usuario.withdrawable._hex);
 
+    var listaDepositos = (
+      <div className="box">
+        <h3 className="title">No hay depositos registrados.</h3>
+
+      </div>
+    );
+
+    if (usuario.invested > 0) {
+      var depositos = await Utils.contract.depositos(direccion).call();
+      depositos.amount =  depositos[0];
+      delete depositos[0];
+      depositos.tiempo =  depositos[1];
+      delete depositos[1];
+      depositos.pasivo =  depositos[2];
+      delete depositos[2];
+      depositos.activo =  depositos[3];
+      delete depositos[3];
+
+      console.log(depositos);
+
+      listaDepositos = [];
+
+      var tiempo = await Utils.contract.tiempo().call();
+      tiempo = parseInt(tiempo._hex)*1000;
+
+      let porcent = await Utils.contract.porcent().call();
+        porcent = parseInt(porcent._hex)/100;
+
+      for (let i = 0; i < depositos.amount.length; i++) {
+
+      
+        //depositos.tiempo[i] = parseInt(depositos.tiempo[i]._hex);
+
+        var porcentiempo = (((Date.now()-(parseInt(depositos.tiempo[i]._hex)*1000)))*100)/tiempo;
+
+
+        var fecha = new Date((parseInt(depositos.tiempo[i]._hex)*1000)+tiempo);
+        fecha = ""+fecha;
+
+        var proceso;
+        if (depositos.activo[i]) {
+          if (depositos.pasivo[i]) {
+            proceso = <b>Recompensa Pasiva: {((parseInt(depositos.amount[i]._hex)/10**6)*(porcentiempo/100)).toFixed(2)} USDT</b> 
+          } else {
+            proceso = <b>Plan Binario Activo en proceso</b> 
+          }
+        }else{
+          proceso = <b>Plan Finalizado</b> 
+        }
+        
+
+        listaDepositos[i] = (
+          <div className="box" key={"depsits-"+i}>
+          <h3 className="title">{(parseInt(depositos.amount[i]._hex)/10**6)/porcent} USDT</h3>
+          Tiempo estimado de fin <b>{fecha}</b>
+          <div className="progress" style={{"height": "20px"}}>
+            <div className="progress-bar-striped progress-bar-animated bg-success" role="progressbar" style={{"width": porcentiempo+"%"}} aria-valuenow={this.state.porcentiempo} aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+          <br></br>
+          {proceso}
+    
+    
+        </div>
+        );
+        
+      }
+    }
+
     //console.log(usuario);
 
-    let porcent = await Utils.contract.porcent().call();
-    porcent = parseInt(porcent._hex)/100;
-    var valorPlan = (usuario.invested*porcent);// decimales visuales
-
-    var progresoUsdt = ((valorPlan-(usuario.invested*porcent-(usuario.withdrawn+usuario.withdrawable+usuario.balanceRef+usuario.almacen)))*100)/valorPlan;
-
-    var progresoRetiro = ((valorPlan-(usuario.invested*porcent-usuario.withdrawn))*100)/valorPlan;
-
+    
 
     this.setState({
       direccion: window.tronWeb.address.fromHex(direccion.address),
@@ -165,10 +228,9 @@ export default class Oficina extends Component {
       my: usuario.withdrawable/10**decimales,
       withdrawn: usuario.withdrawn/10**decimales,
       almacen: usuario.almacen/10**decimales,
-      progresoUsdt: progresoUsdt,
-      progresoRetiro: progresoRetiro,
-      valorPlan: valorPlan/10**decimales,
-      directos: usuario.directos
+      porcentiempo: porcentiempo,
+      directos: usuario.directos,
+      depositos: listaDepositos
     });
 
   };
@@ -249,6 +311,7 @@ export default class Oficina extends Component {
     MIN_RETIRO = parseInt(MIN_RETIRO._hex)/10**decimales;
 
     if ( available > MIN_RETIRO ){
+      await Utils.contract.withdrawToDeposit().send();
       await Utils.contract.withdraw().send();
     }else{
       if (available < MIN_RETIRO) {
@@ -284,111 +347,21 @@ export default class Oficina extends Component {
 
         <header style={{'textAlign': 'center'}} className="section-header">
           <h3 className="white">
-            <i className="fa fa-user mr-2" aria-hidden="true"></i>
+            <i className="fa fa-university mr-2" aria-hidden="true"></i>
             <span style={{'fontWeight': 'bold'}}>
-              Mi Oficina:
+              Planes comprados:
             </span>
           </h3>
           <div className="row text-center">
             <div className="col-md-12 col-lg-10 offset-lg-1 wow bounceInUp" data-wow-duration="1s">
-              <div className="box">
-                <h4 className="title"><a href={"https://tronscan.io/#/address/"+direccion} style={{"wordWrap": "break-word"}}>{direccion}</a></h4>
-               
-                <br></br>
-                <b>{(this.state.withdrawn+available).toFixed(2)} USDT</b> ganancias de <b>{this.state.valorPlan} USDT</b>
-                <div className="progress" style={{"height": "20px"}}>
-                  <div className="progress-bar bg-info " role="progressbar" style={{"width": this.state.progresoUsdt+"%"}} aria-valuenow={this.state.progresoUsdt} aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-    
-                <div className="progress" style={{"height": "20px"}}>
-                  <div className="progress-bar bg-warning " role="progressbar" style={{"width": this.state.progresoRetiro+"%"}} aria-valuenow={this.state.progresoRetiro} aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-                Reclamados <b>{(this.state.withdrawn).toFixed(2)} USDT</b>
-
-                <br></br>
-                <button type="button" className="btn btn-success d-block text-center mx-auto mt-1" onClick={() => document.getElementById("why-us").scrollIntoView({block: "end", behavior: "smooth"}) }>Upgrade Plan</button>
-
-
-              </div>
-            </div>
-
-            <div className="col-md-5 offset-lg-1" >
-              <h3 className="white" style={{'fontWeight': 'bold'}}><i className="fa fa-arrow-left mr-2" aria-hidden="true"></i>Mano izquierda</h3>
-              <h6 className="white" style={{'padding': '1.5em', 'fontSize': '11px'}}><a href={link}>{link}</a> <br /><br />
-              <CopyToClipboard text={link}>
-                <button type="button" className="btn btn-info">COPIAR</button>
-              </CopyToClipboard>
-              </h6>
-              <hr></hr>
-            </div>
-
-            <div className="col-md-5 " >
-              <h3 className="white" style={{'fontWeight': 'bold'}}>Mano derecha <i className="fa fa-arrow-right mr-2" aria-hidden="true"></i></h3>
-              <h6 className="white" style={{'padding': '1.5em', 'fontSize': '11px'}}><a href={link2}>{link2}</a> <br /><br />
-              <CopyToClipboard text={link2}>
-                <button type="button" className="btn btn-info">COPIAR</button>
-              </CopyToClipboard>
-              </h6>
-              <hr></hr>
+              {this.state.depositos}
+              
             </div>
           </div>
+
 
         </header>
 
-        <div className="row text-center">
-          <div className="col-md-6 col-lg-5 offset-lg-1 wow bounceInUp" data-wow-delay="0.1s" data-wow-duration="1s">
-            <div className="box">
-              <div className="icon"><i className="ion-ios-paper-outline" style={{color: '#3fcdc7'}}></i></div>
-              <p className="description">Equipo Izquierdo ({this.state.personasIzquierda})</p>
-              <h4 className="title"><a href="#services">Disponible {this.state.puntosEfectivosIzquierda} pts</a></h4>
-              <p className="description">Reclamado {this.state.puntosReclamadosIzquierda} pts</p>
-              <p className="description">Perdidos {this.state.puntosLostIzquierda} pts</p>
-              <hr />
-              <p className="description">Total {this.state.puntosIzquierda} pts</p>
-
-
-            </div>
-          </div>
-          <div className="col-md-6 col-lg-5 wow bounceInUp" data-wow-delay="0.1s" data-wow-duration="1s">
-            <div className="box">
-              <div className="icon"><i className="ion-ios-paper-outline" style={{color: '#3fcdc7'}}></i></div>
-              <p className="description">Equipo Derecho ({this.state.personasDerecha})</p>
-              <h4 className="title"><a href="#services">Disponible {this.state.puntosEfectivosDerecha} pts</a></h4>
-              <p className="description">Reclamado {this.state.puntosReclamadosDerecha} pts</p>
-              <p className="description">Perdidos {this.state.puntosLostDerecha} pts</p>
-              <hr />
-              <p className="description">Total {this.state.puntosDerecha} pts</p>
-
-            </div>
-          </div>
-
-          <div className="col-md-6 col-lg-5 offset-lg-1 wow bounceInUp" data-wow-duration="1s">
-            <div className="box">
-              <div className="icon"><i className="ion-ios-speedometer-outline" style={{color: '#ff689b'}}></i></div>
-              
-              <h4 className="title"><a href="#services">Disponible {available} USDT</a></h4>
-                
-              <button type="button" className="btn btn-info d-block text-center mx-auto mt-1" onClick={() => this.withdraw()}>Retirar ~ {(available/this.state.precioSITE).toFixed(2)} USDT</button>
-                 
-              
-              <hr></hr>
-              <p className="description">Retirado <b>{(this.state.withdrawn).toFixed(2)} USDT</b> </p>
-              <p className="description">Total invertido <b>{invested} USDT</b> </p>
-            </div>
-          </div>
-          <div className="col-md-6 col-lg-5 wow bounceInUp" data-wow-duration="1s">
-            <div className="box">
-              <div className="icon"><i className="ion-ios-analytics-outline" style={{color: '#ff689b'}}></i></div>
-              <p className="description">Bonus </p>
-              <h4 className="title"><a href="#services">{(this.state.balanceRef+this.state.bonusBinario).toFixed(2)} USDT</a></h4>
-              <hr></hr>
-              <p className="description">({this.state.directos}) Referidos directos <b>{(this.state.balanceRef).toFixed(2)} USDT</b> </p>
-              <p className="description">({this.state.personasDerecha+this.state.personasIzquierda}) Red binaria <b>{(this.state.bonusBinario).toFixed(2)} USDT</b> </p>
-              
-            </div>
-          </div>
-
-        </div>
 
       </div>
 

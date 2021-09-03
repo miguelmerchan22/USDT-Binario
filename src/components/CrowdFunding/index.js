@@ -372,9 +372,7 @@ export default class CrowdFunding extends Component {
         valueplan = parseInt(valueplan._hex);
 
         if(sponsor !== "T9yD14Nj9j7xAB4dbGeiX9h8unkKHxuWwb" && investors.registered && await Utils.contract.active(valueUSDT).call()){
-          if( valueplan > investors.plan && investors.plan > 0){
-            await Utils.contract.withdrawToDeposit().send();
-          }else{
+          
             var userWithdrable = await Utils.contract.withdrawable(accountAddress).call();
             userWithdrable = parseInt(userWithdrable._hex);
             var MIN_RETIRO = await Utils.contract.MIN_RETIRO().call();
@@ -397,7 +395,7 @@ export default class CrowdFunding extends Component {
               await Utils.contract.buyPlan(valueUSDT).send();
             }
             
-          }
+          
           
 
           window.alert("Felicidades inversión exitosa");

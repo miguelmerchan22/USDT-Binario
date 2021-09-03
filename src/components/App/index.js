@@ -4,6 +4,7 @@ import TronWeb from "tronweb";
 import Utils from "../../utils";
 import CrowdFunding from "../CrowdFunding";
 import Datos from "../Datos";
+import Depositos from "../Depositos";
 import Oficina from "../Oficina";
 import TronLinkGuide from "../TronLinkGuide";
 
@@ -138,6 +139,8 @@ class App extends Component {
 
           <section id="services" className="section-bg">
             <Oficina />
+            <hr></hr>
+            <Depositos />
           </section>
         </div>
       </div>
