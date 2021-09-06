@@ -186,14 +186,18 @@ export default class Depositos extends Component {
         fecha = ""+fecha;
 
         var proceso;
-        if (depositos.activo[i]) {
-          if (depositos.pasivo[i]) {
+        if (depositos.activo[i]  && ((parseInt(depositos.amount[i]._hex)/10**6)*(porcentiempo/100)) < (parseInt(depositos.amount[i]._hex)/10**6)) {
+          if (depositos.pasivo[i]  ) {
             proceso = <b>Recompensa Pasiva: {((parseInt(depositos.amount[i]._hex)/10**6)*(porcentiempo/100)).toFixed(2)} USDT</b> 
           } else {
-            proceso = <b>Plan Binario Activo en proceso</b> 
+            proceso = <b>Plan FREE Binario (ACTIVO)</b> 
           }
         }else{
-          proceso = <b>Plan Finalizado</b> 
+          if (depositos.pasivo[i]  ) {
+            proceso = <b>Plan Finalizado - Total ganado con este plan {(parseInt(depositos.amount[i]._hex)/10**6)}</b> 
+          }else{
+            proceso = <b>Plan FREE Binario (FINALIZADO)</b> 
+          }
         }
         
 
@@ -322,7 +326,7 @@ export default class Depositos extends Component {
 
 
   render() {
-    var { balanceRef, invested, my, direccion, link, link2, almacen, valorPlan, directos, bonusBinario} = this.state;
+    var { balanceRef, invested, my, almacen, valorPlan, directos, bonusBinario} = this.state;
 
     var available = balanceRef+my+almacen;
     if(directos >= 2 && available < valorPlan ){
