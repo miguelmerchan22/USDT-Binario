@@ -133,7 +133,7 @@ export default class CrowdFunding extends Component {
 
     var texto = inicio+"..."+fin;
 
-    document.getElementById("contract").innerHTML = '<a href="https://tronscan.org/#/contract/'+contractAddress+'/code">Contrato V 2.0</a>';
+    document.getElementById("contract").innerHTML = '<a href="https://tronscan.org/#/contract/'+contractAddress+'/code">Contrato V 1.0</a>';
     document.getElementById("login").href = `https://tronscan.io/#/address/${accountAddress}`;
     document.getElementById("login-my-wallet").innerHTML = texto;
 
@@ -435,7 +435,7 @@ export default class CrowdFunding extends Component {
     return (
       <div className="card wow bounceInUp text-center">
         <div className="card-body">
-          <h5 className="card-title" id="contract" >Contrato V 2.0</h5>
+          <h5 className="card-title" id="contract" >Contrato V 1.0</h5>
 
           <table className="table borderless">
             <tbody>

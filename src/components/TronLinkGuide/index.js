@@ -22,7 +22,7 @@ const TronLinkGuide = props => {
 
     if(!installed) {
         return (
-            <div className='row' onClick={ openTronLink }>
+            <div className='row' onClick={ openTronLink } style={{'padding-top': '7em','color': 'black','textDecoration': 'none'}}>
                 <div className='col-sm-8 bg-secondary text-white'>
                     <h1>Instalar TronLink</h1>
                     <p>
@@ -38,7 +38,7 @@ const TronLinkGuide = props => {
     return (
     <> <a href='/'>
 
-        <div className='tronLink row' style={{'padding': '3em','color': 'black','textDecoration': 'none'}}>
+        <div className='tronLink row' style={{'padding-top': '7em','color': 'black','textDecoration': 'none'}}>
 
             <div className='info col-sm-8 bg-secondary text-white'>
                 <h1>Requiere Iniciar Sesión</h1>

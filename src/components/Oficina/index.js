@@ -138,7 +138,6 @@ export default class Oficina extends Component {
     usuario.withdrawn = parseInt(usuario.withdrawn._hex);
     usuario.directos = parseInt(usuario.directos);
     usuario.balanceRef = parseInt(usuario.balanceRef);
-    usuario.almacen = parseInt(usuario.almacen);
     usuario.totalRef = parseInt(usuario.totalRef._hex);
     usuario.paidAt = parseInt(usuario.paidAt._hex);
     usuario.withdrawable = parseInt(usuario.withdrawable._hex);
@@ -150,7 +149,7 @@ export default class Oficina extends Component {
 
     var valorPlan = (usuario.invested*porcent);// decimales visuales
 
-    var progresoUsdt = ((valorPlan-(usuario.invested*porcent-(usuario.withdrawn+usuario.withdrawable+usuario.balanceRef+usuario.almacen)))*100)/valorPlan;
+    var progresoUsdt = ((valorPlan-(usuario.invested*porcent-(usuario.withdrawn+usuario.withdrawable)))*100)/valorPlan;
 
     var progresoRetiro = ((valorPlan-(usuario.invested*porcent-usuario.withdrawn))*100)/valorPlan;
 

@@ -56,10 +56,10 @@
 
       <div class="logo float-left" >
         <!-- Uncomment below if you prefer to use an image logo -->
-        <p class="text-light text-center" style="width: 130%;">
+        <p class="text-light text-center" style="height: 100%;">
           
-          <img src="img/GCC.svg" alt="smartssite capital" align="left" class="img-fluid">
-          <span id="p1" style='font-family: montserrat,sans-serif;color: #004289;font-size: 16px;'>Cargando...</span></p>
+          <img src="img/GCC.svg" alt="smartssite capital" align="left" height="200px" >
+        </p>
 
       </div>
 
@@ -93,13 +93,13 @@
           </li>
           <li><a href="#services"><i class="fa fa-user mr-2" aria-hidden="true"></i>Oficina</a></li>
           <li>
-            <a href="https://justswap.io/?lang=en-US?tokenAddress=TDDkSxfkN5DbqXK3tHSZFXRMcT9aS6m9qz&type=swap#/home">
+            <a href="https://justswap.io/?lang=en-US?tokenAddress=TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t&type=swap#/home">
               <i class="fa fa-exchange" aria-hidden="true"></i>
               Exchange
             </a>
           </li>
           <li>
-            <a href="https://justswap.io/?lang=en-US?tokenAddress=TDDkSxfkN5DbqXK3tHSZFXRMcT9aS6m9qz&type=swap#/scan/detail/trx/TDDkSxfkN5DbqXK3tHSZFXRMcT9aS6m9qz">
+            <a href="https://justswap.io/?lang=en-US?tokenAddress=TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t&type=swap#/scan/detail/trx/TDDkSxfkN5DbqXK3tHSZFXRMcT9aS6m9qz">
               <i class="fa fa-bar-chart" aria-hidden="true"></i>
               Chart
             </a>
@@ -269,22 +269,7 @@
 
   <script type="text/javascript">
 
-    function consulta(){
-        var proxyUrl = 'https://proxy-sites.herokuapp.com/';
-        var apiUrl = 'https://precio-site.herokuapp.com/api/v1/servicio/precio/SITE';
-        fetch(proxyUrl+apiUrl).then(response => {
-        return response.json();
-        }).then(data => {
-        // Work with JSON data
-        var price = data.Data.precio;
 
-        document.getElementById("p1").innerHTML = "<strong>$</strong>"+price.toFixed(4)+" USDT" ;
-        }).catch(err => {
-            console.log(err);
-            document.getElementById("p1").innerHTML = "Cargando...";
-        
-        });
-    }
 
     
     function consulta2(){
@@ -314,10 +299,9 @@
         });
     }
 
-    consulta();
+
     consulta2();
 
-    setInterval(() => consulta(),30*1000);
     setInterval(() => consulta2(),30*1000);
     
 

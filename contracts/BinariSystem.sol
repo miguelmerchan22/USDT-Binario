@@ -428,10 +428,10 @@ contract BinarySystem is Ownable{
             
           }else{
 
-            delete usuario.amount;
             usuario.balanceRef += usuario.amount;
             usuario.totalRef += usuario.amount;
             totalRefRewards += usuario.amount;
+            delete usuario.amount;
             
           }
 
