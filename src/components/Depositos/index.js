@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import {CopyToClipboard} from 'react-copy-to-clipboard';
+//import {CopyToClipboard} from 'react-copy-to-clipboard';
 import Utils from "../../utils";
 import contractAddress from "../Contract";
 
@@ -143,7 +143,6 @@ export default class Depositos extends Component {
     usuario.almacen = parseInt(usuario.almacen);
     usuario.totalRef = parseInt(usuario.totalRef._hex);
     usuario.paidAt = parseInt(usuario.paidAt._hex);
-    usuario.plan = parseInt(usuario.plan._hex);
     usuario.withdrawable = parseInt(usuario.withdrawable._hex);
 
     var listaDepositos = (
@@ -164,7 +163,7 @@ export default class Depositos extends Component {
       depositos.activo =  depositos[3];
       delete depositos[3];
 
-      console.log(depositos);
+      //console.log(depositos);
 
       listaDepositos = [];
 
@@ -288,10 +287,8 @@ export default class Depositos extends Component {
       puntosEfectivosDerecha: parseInt(bonusBinario.rigth._hex)/10**6,
 
       puntosReclamadosIzquierda: parseInt(brazoIzquierdo.reclamados._hex)/10**6,
-      puntosReclamadosDerecha: parseInt(brazoDerecho.reclamados._hex)/10**6,
+      puntosReclamadosDerecha: parseInt(brazoDerecho.reclamados._hex)/10**6
 
-      puntosLostIzquierda: parseInt(brazoIzquierdo.lost._hex)/10**6,
-      puntosLostDerecha: parseInt(brazoDerecho.lost._hex)/10**6,
     });
 
   };
@@ -325,25 +322,7 @@ export default class Depositos extends Component {
   };
 
 
-  render() {
-    var { balanceRef, invested, my, almacen, valorPlan, directos, bonusBinario} = this.state;
-
-    var available = balanceRef+my+almacen;
-    if(directos >= 2 && available < valorPlan ){
-      available += bonusBinario;
-    }
-    
-    available = available.toFixed(2);
-    available = parseFloat(available);
-
-    balanceRef = balanceRef.toFixed(2);
-    balanceRef = parseFloat(balanceRef);
-
-    invested = invested.toFixed(2);
-    invested = parseFloat(invested);
-
-    my = my.toFixed(2);
-    my = parseFloat(my);
+  render() {   
 
     return (
 

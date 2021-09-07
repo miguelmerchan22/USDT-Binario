@@ -912,7 +912,6 @@ contract BinarySystem is Ownable{
   function corteBinario(address any_user) public view returns (uint256, uint256, bool) {
     Investor storage investor2 = investors[any_user];
 
-
     uint256 binary;
     uint256 left;
     uint256 rigth;

@@ -141,13 +141,13 @@ export default class Oficina extends Component {
     usuario.almacen = parseInt(usuario.almacen);
     usuario.totalRef = parseInt(usuario.totalRef._hex);
     usuario.paidAt = parseInt(usuario.paidAt._hex);
-    usuario.plan = parseInt(usuario.plan._hex);
     usuario.withdrawable = parseInt(usuario.withdrawable._hex);
 
     //console.log(usuario);
 
     let porcent = await Utils.contract.porcent().call();
     porcent = parseInt(porcent._hex)/100;
+
     var valorPlan = (usuario.invested*porcent);// decimales visuales
 
     var progresoUsdt = ((valorPlan-(usuario.invested*porcent-(usuario.withdrawn+usuario.withdrawable+usuario.balanceRef+usuario.almacen)))*100)/valorPlan;
@@ -185,7 +185,7 @@ export default class Oficina extends Component {
 
   async Investors3() {
 
-    var {balanceRef, my, almacen, directos, valorPlan } = this.state;
+    var {directos, valorPlan } = this.state;
 
     let direccion = window.tronWeb.defaultAddress.base58;
 
@@ -195,7 +195,11 @@ export default class Oficina extends Component {
     // monto de bonus y puntos efectivos
     let bonusBinario = await Utils.contract.withdrawableBinary(direccion).call();
   
-    var available = (balanceRef+my+almacen);
+    var available = await Utils.contract.withdrawable(direccion).call();
+    //console.log(available);
+    available = parseInt(available._hex)/10**6;
+    //console.log(available);
+
 
     if(directos >= 2 && available < valorPlan ){
       bonusBinario.amount = parseInt(bonusBinario.amount._hex)/10**6;
@@ -224,20 +228,16 @@ export default class Oficina extends Component {
       puntosReclamadosIzquierda: parseInt(brazoIzquierdo.reclamados._hex)/10**6,
       puntosReclamadosDerecha: parseInt(brazoDerecho.reclamados._hex)/10**6,
 
-      puntosLostIzquierda: parseInt(brazoIzquierdo.lost._hex)/10**6,
-      puntosLostDerecha: parseInt(brazoDerecho.lost._hex)/10**6,
+      available:available
+
     });
 
   };
 
   async withdraw(){
-    const { balanceRef, my, almacen, directos, valorPlan, bonusBinario } = this.state;
+    var {available} = this.state;
 
-    var available = (balanceRef+my+almacen);
-    if(directos >= 2 && available < valorPlan){
-      available += bonusBinario;
-    }
-    available = available.toFixed(8);
+    available = (available*1).toFixed(6);
     available = parseFloat(available);
 
     var direccioncontract = await Utils.contract.tokenPricipal().call();
@@ -259,14 +259,10 @@ export default class Oficina extends Component {
 
 
   render() {
-    var { balanceRef, invested, my, direccion, link, link2, almacen, valorPlan, directos, bonusBinario} = this.state;
+    var { available, balanceRef, invested, my, direccion, link, link2, almacen, valorPlan, directos, bonusBinario} = this.state;
 
-    var available = balanceRef+my+almacen;
-    if(directos >= 2 && available < valorPlan ){
-      available += bonusBinario;
-    }
     
-    available = available.toFixed(2);
+    available = (available*1).toFixed(2);
     available = parseFloat(available);
 
     balanceRef = balanceRef.toFixed(2);
@@ -342,7 +338,6 @@ export default class Oficina extends Component {
               <p className="description">Equipo Izquierdo ({this.state.personasIzquierda})</p>
               <h4 className="title"><a href="#services">Disponible {this.state.puntosEfectivosIzquierda} pts</a></h4>
               <p className="description">Reclamado {this.state.puntosReclamadosIzquierda} pts</p>
-              <p className="description">Perdidos {this.state.puntosLostIzquierda} pts</p>
               <hr />
               <p className="description">Total {this.state.puntosIzquierda} pts</p>
 
@@ -355,7 +350,6 @@ export default class Oficina extends Component {
               <p className="description">Equipo Derecho ({this.state.personasDerecha})</p>
               <h4 className="title"><a href="#services">Disponible {this.state.puntosEfectivosDerecha} pts</a></h4>
               <p className="description">Reclamado {this.state.puntosReclamadosDerecha} pts</p>
-              <p className="description">Perdidos {this.state.puntosLostDerecha} pts</p>
               <hr />
               <p className="description">Total {this.state.puntosDerecha} pts</p>
 

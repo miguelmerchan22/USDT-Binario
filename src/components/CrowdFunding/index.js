@@ -79,14 +79,10 @@ export default class CrowdFunding extends Component {
 
     var datos = {};
 
-    inversors.plan = parseInt(inversors.plan._hex);
-
     inversors.inicio = 1000;
     
     var tiempo = await Utils.contract.tiempo().call();
     tiempo = parseInt(tiempo._hex)*1000;
-
-    var porcentiempo = ((Date.now()-inversors.inicio)*100)/tiempo;
 
     var direccioncontract = await Utils.contract.tokenPricipal().call();
 
@@ -100,11 +96,6 @@ export default class CrowdFunding extends Component {
       aprovado = parseInt(aprovado._hex);
     }
     
-    if(porcentiempo >= 100){
-      inversors.plan = 1;
-    }else{
-      inversors.plan++;
-    }
 
     if (aprovado > 0) {
 
