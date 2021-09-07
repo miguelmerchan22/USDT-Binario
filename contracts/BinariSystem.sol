@@ -884,6 +884,10 @@ contract BinarySystem is Ownable{
   }
 
   function withdrawable(address any_user) public view returns (uint256) {
+
+    Investor storage investor2 = investors[any_user];
+
+    uint256 saldo = investor2.amount;
     
     uint256[] memory amount;
     uint256[] memory time;
@@ -893,7 +897,13 @@ contract BinarySystem is Ownable{
 
     (amount, time, pasive, activo, total) = depositos(any_user);
 
-    return total;
+    if (saldo >= total) {
+      return total;
+    }else{
+      return saldo;
+    }
+
+    
   }
 
   function profit(address any_user) public view returns (uint256, uint256, uint256, bool) {
