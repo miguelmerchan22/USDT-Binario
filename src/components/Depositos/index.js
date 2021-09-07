@@ -188,13 +188,13 @@ export default class Depositos extends Component {
         var proceso;
         if (depositos.activo[i]  && ((parseInt(depositos.amount[i]._hex)/10**6)*(porcentiempo/100)) < (parseInt(depositos.amount[i]._hex)/10**6)) {
           if (depositos.pasivo[i]  ) {
-            proceso = <b>Recompensa Pasiva: {((parseInt(depositos.amount[i]._hex)/10**6)*(porcentiempo/100)).toFixed(2)} USDT</b> 
+            proceso = <b>Plan Binario (ACTIVO)</b> 
           } else {
             proceso = <b>Plan FREE Binario (ACTIVO)</b> 
           }
         }else{
           if (depositos.pasivo[i]  ) {
-            proceso = <b>Plan Finalizado - Total ganado con este plan {(parseInt(depositos.amount[i]._hex)/10**6)}</b> 
+            proceso = <b>Plan Binario (FINALIZADO)</b> 
           }else{
             proceso = <b>Plan FREE Binario (FINALIZADO)</b> 
           }
@@ -353,7 +353,7 @@ export default class Depositos extends Component {
           <h3 className="white">
             <i className="fa fa-university mr-2" aria-hidden="true"></i>
             <span style={{'fontWeight': 'bold'}}>
-              Planes comprados:
+              Depositos:
             </span>
           </h3>
           <div className="row text-center">
