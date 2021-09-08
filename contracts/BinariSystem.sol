@@ -901,7 +901,7 @@ contract BinarySystem is Ownable{
     total += binary;
 
     if (saldo >= total) {
-      return total;
+      return total+investor2.balanceRef;
     }else{
       return saldo;
     }
