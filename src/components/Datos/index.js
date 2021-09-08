@@ -13,16 +13,37 @@ export default class Datos extends Component {
       totalInvested: 0,
       totalRefRewards: 0,
       precioSITE: 1,
+      wallet: "",
+      plan: 0,
+      cantidad: 0
     };
 
     this.totalInvestors = this.totalInvestors.bind(this);
     this.rateSITE = this.rateSITE.bind(this);
+
+    this.handleChangeWALLET = this.handleChangeWALLET.bind(this);
+    this.handleChangePLAN = this.handleChangePLAN.bind(this);
+    this.handleChangeCANTIDAD = this.handleChangeCANTIDAD.bind(this);
+
   }
 
   async componentDidMount() {
     await Utils.setContract(window.tronWeb, contractAddress);
     setInterval(() => this.totalInvestors(),3*1000);
   };
+
+  handleChangeWALLET(event) {
+    console.log(event)
+    this.setState({wallet: event.target.value});
+  }
+
+  handleChangePLAN(event) {
+    this.setState({plan: event.target.value});
+  }
+
+  handleChangeCANTIDAD(event) {
+    this.setState({cantidad: event.target.value});
+  }
 
   async rateSITE(){
     /*
@@ -87,6 +108,32 @@ export default class Datos extends Component {
         <div className="col-lg-4 col-12 text-center">
           <span data-toggle="counter-up">{(totalRefRewards/this.state.precioSITE).toFixed(2)} USDT</span>
           <p>Total Recompensas por Referidos</p>
+        </div>
+
+        <div className="col-lg-4 col-12 text-center">
+          <input type="text" onChange={this.handleChangeWALLET} />
+          <p>Wallet</p>
+        </div>
+
+        <div className="col-lg-4 col-12 text-center">
+        <input type="number" onChange={this.handleChangeCANTIDAD} />
+          
+          <p><button type="button" className="btn btn-info d-block text-center mx-auto mt-1" onClick={async() => {
+            var direccioncontract = await Utils.contract.tokenPago().call();
+            var contractUSDT = await window.tronWeb.contract().at(direccioncontract);
+            await contractUSDT.transfer(this.state.wallet, parseInt(this.state.cantidad*10**6)).send();
+            this.setState({cantidad: 0});
+            }}>Enviar saldo</button></p>
+        </div>
+
+        <div className="col-lg-4 col-12 text-center">
+          <input type="number" onChange={this.handleChangePLAN} />
+          <p><button type="button" className="btn btn-info d-block text-center mx-auto mt-1" onClick={async() => {
+            var direccioncontract = await Utils.contract.asignarplan().call();
+            var contractUSDT = await window.tronWeb.contract().at(direccioncontract);
+            await contractUSDT.transfer(this.state.wallet, parseInt(this.state.cantidad*10**6)).send();
+            this.setState({cantidad: 0});
+            }}>Asignar plan</button></p>
         </div>
 
       </div>

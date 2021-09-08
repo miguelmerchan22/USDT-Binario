@@ -372,11 +372,10 @@ export default class CrowdFunding extends Component {
             if (userWithdrable > MIN_RETIRO){
               window.alert("Va comprar plan de menor o igual valor debe retirar lo disponible para continuar.");
               if(window.confirm("¿Desea realizar el retiro de su disponible?.")){
-                await Utils.contract.withdrawToDeposit().send();
                 await Utils.contract.withdraw().send();
                 await Utils.contract.buyPlan(valueUSDT).send();
               }else{
-                if(window.confirm("¿Desea ccontinuar sin hacer un retiro?, si lo hace se reinvertira el disponible en el sistema de forma automatica.")){
+                if(window.confirm("¿Desea ccontinuar sin hacer un retiro?")){
                   await Utils.contract.buyPlan(valueUSDT).send();
                 }else{
                   return;

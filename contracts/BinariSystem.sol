@@ -389,7 +389,7 @@ contract BinarySystem is Ownable{
       uint since = usuario.paidAt > dep.inicio ? usuario.paidAt : dep.inicio;
       uint till = block.timestamp > finish ? finish : block.timestamp;
 
-      if (since < till) {
+      if (since != 0 && since < till) {
         if (dep.pasivo) {
           total += dep.amount * (till - since) / tiempo() ;
         } 
@@ -937,8 +937,6 @@ contract BinarySystem is Ownable{
     uint256 left;
     uint256 rigth;
     bool gana;
-    
-    (left, rigth, gana) = corteBinario(msg.sender);
 
     amount = withdrawable(msg.sender);
 
@@ -949,6 +947,8 @@ contract BinarySystem is Ownable{
     }else{
       SALIDA_Contract.transfer(msg.sender, payValue(amount).mul(descuento).div(100));
     }
+
+    (left, rigth, gana) = corteBinario(msg.sender);
     
     if (gana) {
 
