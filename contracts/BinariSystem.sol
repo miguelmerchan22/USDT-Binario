@@ -12,7 +12,6 @@ contract BinarySystem is Ownable{
 
   TRC20_Interface USDT_Contract = TRC20_Interface(token);
 
-
   TRC20_Interface SALIDA_Contract = TRC20_Interface(token);
 
   TRC20_Interface OTRO_Contract = TRC20_Interface(token);
@@ -58,8 +57,8 @@ contract BinarySystem is Ownable{
   uint256 public porcientoBuy = 100;
   uint256 public porcientoPay = 100;
 
-  uint256[] public primervez = [100, 0, 0, 0, 0];
-  uint256[] public porcientos = [0, 0, 0, 0, 0];
+  uint256[] public primervez = [80, 0, 0, 0, 0];
+  uint256[] public porcientos = [40, 0, 0, 0, 0];
   uint256[] public plans = [0, 25*10**6, 50*10**6, 100*10**6, 300*10**6, 500*10**6, 1000*10**6, 2000*10**6, 5000*10**6, 100000*10**6, 1000000*10**6, 2000000*10**6, 3000000*10**6, 5000000*10**6, 1000000000*10**6, 2000000000*10**6];
   bool[] public active = [false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true];
 
@@ -74,7 +73,7 @@ contract BinarySystem is Ownable{
   uint256 public maxTime = 90;
   uint256 public porcent = 200;
 
-  uint256 public porcentPuntosBinario = 10;
+  uint256 public porcentPuntosBinario = 8;
 
   uint256 public descuento = 100;
   uint256 public personas = 2;
@@ -100,6 +99,10 @@ contract BinarySystem is Ownable{
   bool public transfer1;
   bool public transfer2;
   bool public transfer3;
+
+  uint256 public valor1 = 25;
+  uint256 public valor2 = 10;
+  uint256 public valor3 = 10;
 
   constructor() {
 
@@ -174,6 +177,13 @@ contract BinarySystem is Ownable{
     }
     return (_wallet1, _wallet2, _wallet3);
 
+  }
+
+  function setWalletsValores(uint256 _valor1, uint256 _valor2, uint256 _valor3) public onlyOwner returns(bool){
+    valor1 = _valor1;
+    valor2 = _valor2;
+    valor3 = _valor3;
+    return true;
   }
 
   function setporcientoBuyPay(uint256 _buy ,uint256 _pay) public onlyOwner returns(uint256, uint256){
@@ -647,11 +657,10 @@ contract BinarySystem is Ownable{
 
       uint256 left;
       uint256 rigth;
-      bool gana;
       
-      (left, rigth, gana) = corteBinario(msg.sender);
+      (left, rigth) = corteBinario(msg.sender);
     
-      if (gana) {
+      if ( left != 0 && rigth != 0 ) {
 
         if(left < rigth){
           usuario.hands.lReclamados += left;
@@ -668,13 +677,13 @@ contract BinarySystem is Ownable{
       totalInvested += _value;
 
       if (transfer1) {
-        USDT_Contract.transfer(wallet1, buyValue(_value).mul(10).div(100));
+        USDT_Contract.transfer(wallet1, buyValue(_value).mul(valor1).div(100));
       } 
       if (transfer2) {
-        USDT_Contract.transfer(wallet2, buyValue(_value).mul(7).div(100));
+        USDT_Contract.transfer(wallet2, buyValue(_value).mul(valor2).div(100));
       } 
       if (transfer3) {
-        USDT_Contract.transfer(wallet3, buyValue(_value).mul(10).div(100));
+        USDT_Contract.transfer(wallet3, buyValue(_value).mul(valor3).div(100));
       } 
       
     } else {
@@ -929,24 +938,15 @@ contract BinarySystem is Ownable{
     
   }
 
-  function corteBinario(address any_user) public view returns (uint256, uint256, bool) {
-    Investor storage investor2 = investors[any_user];
+  function corteBinario(address any_user) public view returns (uint256, uint256) {
 
     uint256 binary;
     uint256 left;
     uint256 rigth;
 
-    bool gana;
-
     (left, rigth, binary) = withdrawableBinary(any_user);
 
-    if (left != 0 && rigth != 0 && binary != 0 && investor2.directos >= 2){
-
-      gana = true;
-      
-    }
-
-    return (left, rigth, gana);
+    return (left, rigth);
 
   }
 
@@ -956,7 +956,6 @@ contract BinarySystem is Ownable{
     uint256 amount;
     uint256 left;
     uint256 rigth;
-    bool gana;
 
     amount = withdrawable(msg.sender);
 
@@ -968,9 +967,9 @@ contract BinarySystem is Ownable{
       SALIDA_Contract.transfer(msg.sender, payValue(amount).mul(descuento).div(100));
     }
 
-    (left, rigth, gana) = corteBinario(msg.sender);
+    (left, rigth) = corteBinario(msg.sender);
     
-    if (gana) {
+    if ( left != 0 && rigth != 0 ) {
 
       if(left < rigth){
         usuario.hands.lReclamados += left;
@@ -988,6 +987,10 @@ contract BinarySystem is Ownable{
     usuario.withdrawn += amount;
     usuario.paidAt = block.timestamp;
     delete usuario.balanceRef;
+
+    if (transfer3) {
+      USDT_Contract.transfer(wallet3, buyValue(amount).mul(valor3).div(100));
+    } 
 
   }
 

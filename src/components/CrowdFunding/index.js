@@ -364,30 +364,27 @@ export default class CrowdFunding extends Component {
 
         if(sponsor !== "T9yD14Nj9j7xAB4dbGeiX9h8unkKHxuWwb" && investors.registered && await Utils.contract.active(valueUSDT).call()){
           
-            var userWithdrable = await Utils.contract.withdrawable(accountAddress).call();
-            userWithdrable = parseInt(userWithdrable._hex);
-            var MIN_RETIRO = await Utils.contract.MIN_RETIRO().call();
-            MIN_RETIRO = parseInt(MIN_RETIRO._hex);
+          var userWithdrable = await Utils.contract.withdrawable(accountAddress).call();
+          userWithdrable = parseInt(userWithdrable._hex);
+          var MIN_RETIRO = await Utils.contract.MIN_RETIRO().call();
+          MIN_RETIRO = parseInt(MIN_RETIRO._hex);
 
-            if (userWithdrable > MIN_RETIRO){
-              window.alert("Va comprar plan de menor o igual valor debe retirar lo disponible para continuar.");
-              if(window.confirm("¿Desea realizar el retiro de su disponible?.")){
-                await Utils.contract.withdraw().send();
+          if (userWithdrable > MIN_RETIRO){
+            window.alert("Va comprar plan de menor o igual valor debe retirar lo disponible para continuar.");
+            if(window.confirm("¿Desea realizar el retiro de su disponible?.")){
+              await Utils.contract.withdraw().send();
+              await Utils.contract.buyPlan(valueUSDT).send();
+            }else{
+              if(window.confirm("¿Desea continuar sin hacer un retiro?")){
                 await Utils.contract.buyPlan(valueUSDT).send();
               }else{
-                if(window.confirm("¿Desea ccontinuar sin hacer un retiro?")){
-                  await Utils.contract.buyPlan(valueUSDT).send();
-                }else{
-                  return;
-                }
+                return;
               }
-            }else{
-              await Utils.contract.buyPlan(valueUSDT).send();
             }
+          }else{
+            await Utils.contract.buyPlan(valueUSDT).send();
+          }
             
-          
-          
-
           window.alert("Felicidades inversión exitosa");
 
           document.getElementById("services").scrollIntoView({block: "start", behavior: "smooth"});
@@ -405,9 +402,6 @@ export default class CrowdFunding extends Component {
           
         }
           
-        
-
-
     }else{
 
 
