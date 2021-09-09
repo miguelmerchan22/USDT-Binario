@@ -644,7 +644,26 @@ contract BinarySystem is Ownable{
       usuario.depositos.push(Deposito(block.timestamp,_value.mul(porcent.div(100)), true));
       usuario.invested += _value;
       usuario.amount += _value.mul(porcent.div(100));
+
+      uint256 left;
+      uint256 rigth;
+      bool gana;
       
+      (left, rigth, gana) = corteBinario(msg.sender);
+    
+      if (gana) {
+
+        if(left < rigth){
+          usuario.hands.lReclamados += left;
+          usuario.hands.rReclamados += left;
+            
+        }else{
+          usuario.hands.lReclamados += rigth;
+          usuario.hands.rReclamados += rigth;
+            
+        }
+        
+      }
 
       totalInvested += _value;
 
@@ -899,9 +918,10 @@ contract BinarySystem is Ownable{
     (amount, time, pasive, activo, total) = depositos(any_user);
 
     total += binary;
+    total += investor2.balanceRef;
 
     if (saldo >= total) {
-      return total+investor2.balanceRef;
+      return total;
     }else{
       return saldo;
     }
