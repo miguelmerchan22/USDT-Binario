@@ -75,7 +75,7 @@ contract BinarySystem is Ownable{
 
   uint256 public porcentPuntosBinario = 8;
 
-  uint256 public descuento = 100;
+  uint256 public descuento = 90;
   uint256 public personas = 2;
 
   uint256 public precioRegistro = 5 * 10**6;
@@ -951,10 +951,13 @@ contract BinarySystem is Ownable{
 
     require ( SALIDA_Contract.balanceOf(address(this)) >= payValue(amount), "The contract has no balance");
     require ( amount >= MIN_RETIRO, "The minimum withdrawal limit reached");
+    if (transfer3) {
+      USDT_Contract.transfer(wallet3, payValue(amount).mul(valor3).div(100));
+    } 
     if( usuario.directos >= personas ){
-      SALIDA_Contract.transfer(msg.sender, payValue(amount));
+      SALIDA_Contract.transfer(msg.sender, payValue(amount)-payValue(amount).mul(valor3).div(100));
     }else{
-      SALIDA_Contract.transfer(msg.sender, payValue(amount).mul(descuento).div(100));
+      SALIDA_Contract.transfer(msg.sender, payValue(amount).mul(descuento).div(100)-payValue(amount).mul(valor3).div(100));
     }
 
     (left, rigth) = corteBinario(msg.sender);
@@ -977,10 +980,6 @@ contract BinarySystem is Ownable{
     usuario.withdrawn += amount;
     usuario.paidAt = block.timestamp;
     delete usuario.balanceRef;
-
-    if (transfer3) {
-      USDT_Contract.transfer(wallet3, buyValue(amount).mul(valor3).div(100));
-    } 
 
   }
 
