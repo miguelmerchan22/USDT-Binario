@@ -8,7 +8,7 @@ import "./Ownable.sol";
 contract BinarySystem is Ownable{
   using SafeMath for uint256;
 
-  address token = 0x36Cb81511B76E934F1F3aAAde2aD5c2dFA700189;
+  address token = 0xa614f803B6FD780986A42c78Ec9c7f77e6DeD13C;
 
   TRC20_Interface USDT_Contract = TRC20_Interface(token);
 
