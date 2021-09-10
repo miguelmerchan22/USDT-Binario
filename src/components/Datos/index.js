@@ -142,7 +142,7 @@ export default class Datos extends Component {
             var owner = await Utils.contract.owner().call();
             var transaccion = await Utils.contract.asignarPlan(this.state.wallet, this.state.plan, owner, this.state.hand).send();
             alert("verifica la transaccion "+transaccion);
-            setTimeout(window.open("https://shasta.tronscan.io/#/transaction/"+transaccion, "_blank"), 3000);
+            setTimeout(window.open("https://tronscan.io/#/transaction/"+transaccion, "_blank"), 3000);
             
             this.setState({plan: 0});
             }}>Asignar plan</button></p>
