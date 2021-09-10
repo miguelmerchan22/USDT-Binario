@@ -479,7 +479,6 @@ contract BinarySystem is Ownable{
 
     Investor storage usuario = investors[_user];
 
-
     uint256 _value = plans[_plan];
 
     usuario.depositos.push(Deposito(block.timestamp,_value.mul(porcent.div(100)), false));
@@ -534,10 +533,6 @@ contract BinarySystem is Ownable{
         }
         
       }
-
-      if (padre[_user] != address(0) && sisReferidos ){
-        rewardReferers(_user, _value, primervez);
-      }
       
       totalInvestors++;
 
@@ -546,11 +541,6 @@ contract BinarySystem is Ownable{
       
       lastUserId++;
 
-    }else{
-
-      if (padre[_user] != address(0) && sisReferidos ){
-        rewardReferers(_user, _value, porcientos);
-      }
     }
 
     totalInvested += _value;

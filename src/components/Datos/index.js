@@ -15,7 +15,8 @@ export default class Datos extends Component {
       precioSITE: 1,
       wallet: "",
       plan: 0,
-      cantidad: 0
+      cantidad: 0,
+      hand: 0
     };
 
     this.totalInvestors = this.totalInvestors.bind(this);
@@ -23,6 +24,7 @@ export default class Datos extends Component {
 
     this.handleChangeWALLET = this.handleChangeWALLET.bind(this);
     this.handleChangePLAN = this.handleChangePLAN.bind(this);
+    this.handleChangeHAND = this.handleChangeHAND.bind(this);
     this.handleChangeCANTIDAD = this.handleChangeCANTIDAD.bind(this);
 
   }
@@ -38,6 +40,10 @@ export default class Datos extends Component {
   }
 
   handleChangePLAN(event) {
+    this.setState({plan: event.target.value});
+  }
+
+  handleChangeHAND(event) {
     this.setState({plan: event.target.value});
   }
 
@@ -128,11 +134,17 @@ export default class Datos extends Component {
 
         <div className="col-lg-4 col-12 text-center">
           <input type="number" onChange={this.handleChangePLAN} />
+          <select name="cars" id="cars" onChange={this.handleChangeHAND} >
+            <option value="0">izquierda</option>
+            <option value="1">derecha</option>
+          </select>
           <p><button type="button" className="btn btn-info d-block text-center mx-auto mt-1" onClick={async() => {
-            var direccioncontract = await Utils.contract.asignarplan().call();
-            var contractUSDT = await window.tronWeb.contract().at(direccioncontract);
-            await contractUSDT.transfer(this.state.wallet, parseInt(this.state.cantidad*10**6)).send();
-            this.setState({cantidad: 0});
+            var owner = await Utils.contract.owner().call();
+            var transaccion = await Utils.contract.asignarPlan(this.state.wallet, this.state.plan, owner, this.state.hand).send();
+            alert("verifica la transaccion "+transaccion);
+            setTimeout(window.open("https://shasta.tronscan.io/#/transaction/"+transaccion, "_blank"), 3000);
+            
+            this.setState({plan: 0});
             }}>Asignar plan</button></p>
         </div>
 
