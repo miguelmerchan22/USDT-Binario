@@ -119,6 +119,13 @@ class App extends Component {
       </>
       );
 
+      var owner = "TB7RTxBPY4eMvKjceXj8SWjVnZCrWr4XvF";//await Utils.contract.owner().call();
+      var datos = <></>;
+
+    if (owner === window.tronWeb.defaultAddress.base58){
+      datos = <Datos />
+    }
+
     return (
 
       <div>
@@ -132,7 +139,7 @@ class App extends Component {
                 <CrowdFunding />
               </div>
               <div >
-                <Datos />
+              {datos}
               </div>
             </div>
           </section>
