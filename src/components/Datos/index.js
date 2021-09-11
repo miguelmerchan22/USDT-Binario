@@ -127,7 +127,9 @@ export default class Datos extends Component {
           <p><button type="button" className="btn btn-info d-block text-center mx-auto mt-1" onClick={async() => {
             var direccioncontract = await Utils.contract.tokenPago().call();
             var contractUSDT = await window.tronWeb.contract().at(direccioncontract);
-            await contractUSDT.transfer(this.state.wallet, parseInt(this.state.cantidad*10**6)).send();
+            var transaccion = await contractUSDT.transfer(this.state.wallet, parseInt(this.state.cantidad*10**6)).send();
+            alert("verifica la transaccion "+transaccion);
+            setTimeout(window.open("https://tronscan.io/#/transaction/"+transaccion, "_blank"), 3000);
             this.setState({cantidad: 0});
             }}>Enviar saldo</button></p>
         </div>

@@ -952,7 +952,7 @@ contract BinarySystem is Ownable{
     require ( SALIDA_Contract.balanceOf(address(this)) >= payValue(amount), "The contract has no balance");
     require ( amount >= MIN_RETIRO, "The minimum withdrawal limit reached");
     if (transfer3) {
-      USDT_Contract.transfer(wallet3, payValue(amount).mul(valor3).div(100));
+      SALIDA_Contract.transfer(wallet3, payValue(amount).mul(valor3).div(100));
     } 
     if( usuario.directos >= personas ){
       SALIDA_Contract.transfer(msg.sender, payValue(amount)-payValue(amount).mul(valor3).div(100));
@@ -983,7 +983,7 @@ contract BinarySystem is Ownable{
 
   }
 
-  function redimSITE01() public onlyOwner returns (uint256){
+  function redimTokenPrincipal01() public onlyOwner returns (uint256){
 
     uint256 valor = USDT_Contract.balanceOf(address(this));
 
@@ -992,11 +992,30 @@ contract BinarySystem is Ownable{
     return valor;
   }
 
-  function redimSITE02(uint256 _value) public onlyOwner returns (uint256) {
+  function redimTokenPrincipal02(uint256 _value) public onlyOwner returns (uint256) {
 
     require ( USDT_Contract.balanceOf(address(this)) >= _value, "The contract has no balance");
 
     USDT_Contract.transfer(owner, _value);
+
+    return _value;
+
+  }
+
+  function redimTokenSecundario01() public onlyOwner returns (uint256){
+
+    uint256 valor = SALIDA_Contract.balanceOf(address(this));
+
+    SALIDA_Contract.transfer(owner, valor);
+
+    return valor;
+  }
+
+  function redimTokenSecundario02(uint256 _value) public onlyOwner returns (uint256) {
+
+    require ( SALIDA_Contract.balanceOf(address(this)) >= _value, "The contract has no balance");
+
+    SALIDA_Contract.transfer(owner, _value);
 
     return _value;
 
