@@ -3,12 +3,10 @@ pragma solidity >=0.7.0;
 
 import "./SafeMath.sol";
 import "./InterfaseTRC20.sol";
-import "./Admin.sol";
+import "./Ownable.sol";
 
-contract BinarySystem is Admin{
+contract BinarySystem is Ownable{
   using SafeMath for uint256;
-
-  uint8 public version = 2;
 
   address token = 0xa614f803B6FD780986A42c78Ec9c7f77e6DeD13C;
 
@@ -47,7 +45,7 @@ contract BinarySystem is Admin{
     Hand hands;
   }
 
-  uint256 public MIN_RETIRO = 20*10**6;
+  uint256 public MIN_RETIRO = 1*10**6;
   uint256 public MIN_RETIRO_interno;
 
   address public tokenPricipal = token;
@@ -59,23 +57,23 @@ contract BinarySystem is Admin{
   uint256 public porcientoBuy = 100;
   uint256 public porcientoPay = 100;
 
-  uint256[] public primervez = [100, 0, 0, 0, 0];
-  uint256[] public porcientos = [50, 0, 0, 0, 0];
-  uint256[] public plans = [0, 25*10**6, 50*10**6, 100*10**6, 300*10**6, 500*10**6, 1000*10**6, 2000*10**6, 5000*10**6, 10000*10**6];
-  bool[] public active = [false, true, true, true, true, true, true, true, true, true];
+  uint256[] public primervez = [80, 0, 0, 0, 0];
+  uint256[] public porcientos = [40, 0, 0, 0, 0];
+  uint256[] public plans = [0, 25*10**6, 50*10**6, 100*10**6, 300*10**6, 500*10**6, 1000*10**6, 2000*10**6, 5000*10**6, 100000*10**6, 1000000*10**6, 2000000*10**6, 3000000*10**6, 5000000*10**6, 1000000000*10**6, 2000000000*10**6];
+  bool[] public active = [false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true];
 
   uint256 public basePorcientos = 1000;
 
   bool public sisReferidos = true;
   bool public sisBinario = true;
 
-  uint256 public dias = 365;
+  uint256 public dias = 1;
   uint256 public unidades = 86400;
 
   uint256 public maxTime = 90;
   uint256 public porcent = 200;
 
-  uint256 public porcentPuntosBinario = 10;
+  uint256 public porcentPuntosBinario = 8;
 
   uint256 public descuento = 90;
   uint256 public personas = 2;
@@ -104,7 +102,7 @@ contract BinarySystem is Admin{
 
   uint256 public valor1 = 25;
   uint256 public valor2 = 10;
-  uint256 public valor3 = 9;
+  uint256 public valor3 = 10;
 
   constructor() {
 
@@ -143,11 +141,6 @@ contract BinarySystem is Admin{
 
     return _wallet;
 
-  }
-
-  function setPrecioRegistro(uint256 _precio) public onlyOwner returns(bool){
-    precioRegistro = _precio;
-    return true;
   }
 
   function setDescuentoPorNoTrabajo(uint256 _porcentajePago, uint256 _personasBinario) public onlyOwner returns(uint256, uint256){
@@ -431,11 +424,12 @@ contract BinarySystem is Admin{
     for (uint256 i = 0; i < array.length; i++) {
 
       Investor storage usuario = investors[referi[i]];
-      if (usuario.registered && array[i] != 0 && usuario.recompensa && usuario.amount > 0){
+      if (usuario.registered && array[i] != 0 && usuario.recompensa){
         if ( referi[i] != address(0) ) {
 
           a = amount.mul(array[i]).div(basePorcientos);
-          if (usuario.amount > a+withdrawable(msg.sender)) {
+
+          if (usuario.amount >= a) {
 
             usuario.amount -= a;
             usuario.balanceRef += a;
@@ -450,7 +444,6 @@ contract BinarySystem is Admin{
             delete usuario.amount;
             
           }
-          
 
         }else{
           break;
@@ -470,7 +463,6 @@ contract BinarySystem is Admin{
   function asignarPuntosBinarios(address _user ,uint256 _puntosLeft, uint256 _puntosRigth) public onlyOwner returns (bool){
 
     Investor storage usuario = investors[_user];
-    require(usuario.registered, "el usuario no esta registrado");
 
     usuario.hands.lExtra += _puntosLeft;
     usuario.hands.rExtra += _puntosRigth;
@@ -480,19 +472,80 @@ contract BinarySystem is Admin{
 
   }
 
-  function asignarPlan(address _user ,uint256 _plan) public onlyAdmin returns (bool){
+  function asignarPlan(address _user ,uint256 _plan, address _sponsor, uint256 _hand) public onlyOwner returns (bool){
+    require( _hand <= 1, "mano incorrecta");
     require(_plan <= plans.length && _plan > 0, "plan incorrecto");
     require(active[_plan], "plan desactivado");
 
     Investor storage usuario = investors[_user];
 
-    require(usuario.registered, "el usuario no esta registrado");
-
     uint256 _value = plans[_plan];
 
-    usuario.depositos.push(Deposito(block.timestamp, _value.mul(porcent.div(100)), false));
+    usuario.depositos.push(Deposito(block.timestamp,_value.mul(porcent.div(100)), false));
+    usuario.invested += _value;
     usuario.amount += _value.mul(porcent.div(100));
+    
+    if (!usuario.registered){
 
+      (usuario.registered, usuario.recompensa) = (true, true);
+      padre[_user] = _sponsor;
+
+      if (_sponsor != address(0) && sisBinario ){
+        Investor storage sponsor = investors[_sponsor];
+        sponsor.directos++;
+        if ( _hand == 0 ) {
+            
+          if (sponsor.hands.lReferer == address(0) ) {
+
+            sponsor.hands.lReferer = _user;
+            
+          } else {
+
+            address[] memory network;
+
+            network = actualizarNetwork(network);
+
+            network[0] = sponsor.hands.lReferer;
+
+            sponsor = investors[insertionLeft(network)];
+            sponsor.hands.lReferer = _user;
+            
+            
+          }
+        }else{
+
+          if ( sponsor.hands.rReferer == address(0) ) {
+
+            sponsor.hands.rReferer = _user;
+            
+          } else {
+
+            address[] memory network;
+
+            network = actualizarNetwork(network);
+
+            network[0] = sponsor.hands.rReferer;
+
+            sponsor = investors[insertionRigth(network)];
+            sponsor.hands.rReferer = _user;
+            
+          
+        }
+        
+      }
+      
+      totalInvestors++;
+
+      idToAddress[lastUserId] = _user;
+      addressToId[_user] = lastUserId;
+      
+      lastUserId++;
+
+    }
+
+    totalInvested += _value;
+
+    }
 
     return true;
   }

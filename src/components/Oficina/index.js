@@ -1,10 +1,6 @@
 import React, { Component } from "react";
 import {CopyToClipboard} from 'react-copy-to-clipboard';
 import Utils from "../../utils";
-import contractAddress from "../Contract";
-
-//import cons from "../../cons.js";
-//import utils from "../../utils";
 
 export default class Oficina extends Component {
   constructor(props) {
@@ -12,7 +8,7 @@ export default class Oficina extends Component {
 
     this.state = {
       direccion: "",
-      link: "Haz una inversión para obtener el LINK de referido",
+      link: "Make an investment to get the referral LINK",
       registered: false,
       balanceRef: 0,
       totalRef: 0,
@@ -59,7 +55,7 @@ export default class Oficina extends Component {
   }
 
   async componentDidMount() {
-    await Utils.setContract(window.tronWeb, contractAddress);
+    await Utils.setContract(window.tronWeb, this.props.contractAddress);
     setInterval(() => this.Investors2(),3*1000);
     setInterval(() => this.Investors3(),3*1000);
     setInterval(() => this.Investors(),3*1000);
@@ -104,17 +100,21 @@ export default class Oficina extends Component {
       }
       let mydireccion = window.tronWeb.defaultAddress.base58;
       mydireccion = await Utils.contract.addressToId(mydireccion).call();
-      mydireccion = loc+'?ref='+mydireccion;
-      var link = mydireccion+"&hand=izq";
-      var link2 = mydireccion+"&hand=der";
+      var ver = "";
+      if (this.props.version > 1) {
+        ver = "?v"+this.props.version;
+      }
+      mydireccion = loc+ver+'?ref='+mydireccion;
+      var link = mydireccion+"&hand=left";
+      var link2 = mydireccion+"&hand=right";
       this.setState({
         link: link,
         link2: link2,
       });
     }else{
       this.setState({
-        link: "Haz una inversión para obtener el LINK de referido",
-        link2: "Haz una inversión para obtener el LINK de referido",
+        link: "Make an investment to get the referral LINK",
+        link2: "Make an investment to get the referral LINK",
       });
     }
   }
@@ -144,14 +144,22 @@ export default class Oficina extends Component {
 
     //console.log(usuario);
 
-    let porcent = await Utils.contract.porcent().call();
-    porcent = parseInt(porcent._hex)/100;
+    var despositos = await Utils.contract.depositos(direccion).call();
+    var valores = despositos[0];
+    var valorPlan = 0;
+    for (let index = 0; index < valores.length; index++) {
+      valorPlan += parseInt(valores[index]);
+    }
 
-    var valorPlan = (usuario.invested*porcent);// decimales visuales
+    //valorPlan = (valorPlan*porcent);//(usuario.invested*porcent);// decimales visuales
 
-    var progresoUsdt = ((valorPlan-(usuario.invested*porcent-(usuario.withdrawn+usuario.withdrawable)))*100)/valorPlan;
+    var progresoUsdt = ((valorPlan-(valorPlan-(usuario.withdrawn+usuario.withdrawable)))*100)/valorPlan;
 
-    var progresoRetiro = ((valorPlan-(usuario.invested*porcent-usuario.withdrawn))*100)/valorPlan;
+    progresoUsdt = progresoUsdt.toFixed(2);
+
+    var progresoRetiro = ((valorPlan-(valorPlan-usuario.withdrawn))*100)/valorPlan;
+
+    progresoRetiro = progresoRetiro.toFixed(2);
 
 
     this.setState({
@@ -216,9 +224,6 @@ export default class Oficina extends Component {
       personasIzquierda: parseInt(puntos.pLeft._hex),
       personasDerecha: parseInt(puntos.pRigth._hex),
 
-      puntosIzquierda: parseInt(puntos.left._hex)/10**6,
-      puntosDerecha: parseInt(puntos.rigth._hex)/10**6,
-
       bonusBinario: bonusBinario.amount,
 
       puntosEfectivosIzquierda: parseInt(bonusBinario.left._hex)/10**6,
@@ -226,6 +231,9 @@ export default class Oficina extends Component {
 
       puntosReclamadosIzquierda: parseInt(brazoIzquierdo.reclamados._hex)/10**6,
       puntosReclamadosDerecha: parseInt(brazoDerecho.reclamados._hex)/10**6,
+
+      puntosIzquierda: parseInt(bonusBinario.left._hex)+parseInt(brazoIzquierdo.reclamados._hex)/10**6,
+      puntosDerecha: parseInt(bonusBinario.rigth._hex)+parseInt(brazoDerecho.reclamados._hex)/10**6,
 
       available:available
 
@@ -251,27 +259,22 @@ export default class Oficina extends Component {
       await Utils.contract.withdraw().send();
     }else{
       if (available < MIN_RETIRO) {
-        window.alert("El minimo para retirar son: "+(MIN_RETIRO)+" USDT");
+        window.alert("The minimum to withdraw are: "+(MIN_RETIRO)+" USDT");
       }
     }
   };
 
 
   render() {
-    var { available, balanceRef, invested, my, direccion, link, link2, almacen, valorPlan, directos, bonusBinario} = this.state;
+    var { available, invested,  direccion, link, link2} = this.state;
 
     
     available = (available*1).toFixed(2);
     available = parseFloat(available);
 
-    balanceRef = balanceRef.toFixed(2);
-    balanceRef = parseFloat(balanceRef);
 
     invested = invested.toFixed(2);
     invested = parseFloat(invested);
-
-    my = my.toFixed(2);
-    my = parseFloat(my);
 
     return (
 
@@ -281,7 +284,7 @@ export default class Oficina extends Component {
           <h3 className="white">
             <i className="fa fa-user mr-2" aria-hidden="true"></i>
             <span style={{'fontWeight': 'bold'}}>
-              Mi Oficina:
+              My Office:
             </span>
           </h3>
           <div className="row text-center">
@@ -290,15 +293,15 @@ export default class Oficina extends Component {
                 <h4 className="title"><a href={"https://tronscan.io/#/address/"+direccion} style={{"wordWrap": "break-word"}}>{direccion}</a></h4>
                
                 <br></br>
-                <b>{(this.state.withdrawn+available).toFixed(2)} USDT</b> ganancias de <b>{this.state.valorPlan} USDT</b>
+                <b>{(this.state.withdrawn+available).toFixed(2)} USDT</b> Earning up to <b>{this.state.valorPlan} USDT</b>
                 <div className="progress" style={{"height": "20px"}}>
-                  <div className="progress-bar bg-info " role="progressbar" style={{"width": this.state.progresoUsdt+"%"}} aria-valuenow={this.state.progresoUsdt} aria-valuemin="0" aria-valuemax="100"></div>
+                  <div className="progress-bar bg-info " role="progressbar" style={{"width": this.state.progresoUsdt+"%"}} aria-valuenow={this.state.progresoUsdt} aria-valuemin="0" aria-valuemax="100">{this.state.progresoUsdt+"%"}</div>
                 </div>
     
                 <div className="progress" style={{"height": "20px"}}>
-                  <div className="progress-bar bg-warning " role="progressbar" style={{"width": this.state.progresoRetiro+"%"}} aria-valuenow={this.state.progresoRetiro} aria-valuemin="0" aria-valuemax="100"></div>
+                  <div className="progress-bar bg-warning " role="progressbar" style={{"width": this.state.progresoRetiro+"%"}} aria-valuenow={this.state.progresoRetiro} aria-valuemin="0" aria-valuemax="100">{this.state.progresoRetiro+"%"}</div>
                 </div>
-                Reclamados <b>{(this.state.withdrawn).toFixed(2)} USDT</b>
+                Claimed <b>{(this.state.withdrawn).toFixed(2)} USDT</b>
 
                 <br></br>
                 <button type="button" className="btn btn-success d-block text-center mx-auto mt-1" onClick={() => document.getElementById("why-us").scrollIntoView({block: "end", behavior: "smooth"}) }>Upgrade Plan</button>
@@ -308,20 +311,20 @@ export default class Oficina extends Component {
             </div>
 
             <div className="col-md-5 offset-lg-1" >
-              <h3 className="white" style={{'fontWeight': 'bold'}}><i className="fa fa-arrow-left mr-2" aria-hidden="true"></i>Mano izquierda</h3>
+              <h3 className="white" style={{'fontWeight': 'bold'}}><i className="fa fa-arrow-left mr-2" aria-hidden="true"></i>Left leg</h3>
               <h6 className="white" style={{'padding': '1.5em', 'fontSize': '11px'}}><a href={link}>{link}</a> <br /><br />
               <CopyToClipboard text={link}>
-                <button type="button" className="btn btn-info">COPIAR</button>
+                <button type="button" className="btn btn-info">COPY</button>
               </CopyToClipboard>
               </h6>
               <hr></hr>
             </div>
 
             <div className="col-md-5 " >
-              <h3 className="white" style={{'fontWeight': 'bold'}}>Mano derecha <i className="fa fa-arrow-right mr-2" aria-hidden="true"></i></h3>
+              <h3 className="white" style={{'fontWeight': 'bold'}}>Right leg <i className="fa fa-arrow-right mr-2" aria-hidden="true"></i></h3>
               <h6 className="white" style={{'padding': '1.5em', 'fontSize': '11px'}}><a href={link2}>{link2}</a> <br /><br />
               <CopyToClipboard text={link2}>
-                <button type="button" className="btn btn-info">COPIAR</button>
+                <button type="button" className="btn btn-info">COPY</button>
               </CopyToClipboard>
               </h6>
               <hr></hr>
@@ -334,9 +337,9 @@ export default class Oficina extends Component {
           <div className="col-md-6 col-lg-5 offset-lg-1 wow bounceInUp" data-wow-delay="0.1s" data-wow-duration="1s">
             <div className="box">
               <div className="icon"><i className="ion-ios-paper-outline" style={{color: '#3fcdc7'}}></i></div>
-              <p className="description">Equipo Izquierdo ({this.state.personasIzquierda})</p>
-              <h4 className="title"><a href="#services">Disponible {this.state.puntosEfectivosIzquierda} pts</a></h4>
-              <p className="description">Reclamado {this.state.puntosReclamadosIzquierda} pts</p>
+              <p className="description">Left team ({this.state.personasIzquierda})</p>
+              <h4 className="title"><a href="#services">Available {this.state.puntosEfectivosIzquierda} pts</a></h4>
+              <p className="description">Used {this.state.puntosReclamadosIzquierda} pts</p>
               <hr />
               <p className="description">Total {this.state.puntosIzquierda} pts</p>
 
@@ -346,9 +349,9 @@ export default class Oficina extends Component {
           <div className="col-md-6 col-lg-5 wow bounceInUp" data-wow-delay="0.1s" data-wow-duration="1s">
             <div className="box">
               <div className="icon"><i className="ion-ios-paper-outline" style={{color: '#3fcdc7'}}></i></div>
-              <p className="description">Equipo Derecho ({this.state.personasDerecha})</p>
-              <h4 className="title"><a href="#services">Disponible {this.state.puntosEfectivosDerecha} pts</a></h4>
-              <p className="description">Reclamado {this.state.puntosReclamadosDerecha} pts</p>
+              <p className="description">Right team ({this.state.personasDerecha})</p>
+              <h4 className="title"><a href="#services">Available {this.state.puntosEfectivosDerecha} pts</a></h4>
+              <p className="description">Used {this.state.puntosReclamadosDerecha} pts</p>
               <hr />
               <p className="description">Total {this.state.puntosDerecha} pts</p>
 
@@ -359,14 +362,14 @@ export default class Oficina extends Component {
             <div className="box">
               <div className="icon"><i className="ion-ios-speedometer-outline" style={{color: '#ff689b'}}></i></div>
               
-              <h4 className="title"><a href="#services">Disponible {available} USDT</a></h4>
+              <h4 className="title"><a href="#services">Available {available} USDT</a></h4>
                 
-              <button type="button" className="btn btn-info d-block text-center mx-auto mt-1" onClick={() => this.withdraw()}>Retirar ~ {(available/this.state.precioSITE).toFixed(2)} USDT</button>
+              <button type="button" className="btn btn-info d-block text-center mx-auto mt-1" onClick={() => this.withdraw()}>Withdraw ~ {(available/this.state.precioSITE).toFixed(2)} USDT</button>
                  
               
               <hr></hr>
-              <p className="description">Retirado <b>{(this.state.withdrawn).toFixed(2)} USDT</b> </p>
-              <p className="description">Total invertido <b>{invested} USDT</b> </p>
+              <p className="description">earned <b>{(this.state.withdrawn).toFixed(2)} USDT</b> </p>
+              <p className="description">Total invested <b>{invested} USDT</b> </p>
             </div>
           </div>
           <div className="col-md-6 col-lg-5 wow bounceInUp" data-wow-duration="1s">
@@ -375,8 +378,8 @@ export default class Oficina extends Component {
               <p className="description">Bonus </p>
               <h4 className="title"><a href="#services">{(this.state.balanceRef+this.state.bonusBinario).toFixed(2)} USDT</a></h4>
               <hr></hr>
-              <p className="description">({this.state.directos}) Referidos directos <b>{(this.state.balanceRef).toFixed(2)} USDT</b> </p>
-              <p className="description">({this.state.personasDerecha+this.state.personasIzquierda}) Red binaria <b>{(this.state.bonusBinario).toFixed(2)} USDT</b> </p>
+              <p className="description">({this.state.directos}) Referral direct <b>{(this.state.balanceRef).toFixed(2)} USDT</b> </p>
+              <p className="description">({this.state.personasDerecha+this.state.personasIzquierda}) Binary earn <b>{(this.state.bonusBinario).toFixed(2)} USDT</b> </p>
               
             </div>
           </div>

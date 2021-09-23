@@ -20,14 +20,16 @@ const TronLinkGuide = props => {
         installed = false
     } = props;
 
+    var link = window.location.href;
+
     if(!installed) {
         return (
-            <div className='row' onClick={ openTronLink } style={{'padding-top': '7em','color': 'black','textDecoration': 'none'}}>
+            <div className='row' onClick={ openTronLink } style={{'paddingTop': '7em','color': 'black','textDecoration': 'none'}}>
                 <div className='col-sm-8 bg-secondary text-white'>
-                    <h1>Instalar TronLink</h1>
+                    <h1>Install TronLink</h1>
                     <p>
-                        To create a post or tip others you must install TronLink. TronLink es una wallet de TRON que puede descargar en <a href={ WEBSTORE_URL } target='_blank' rel='noopener noreferrer'>Chrome Webstore</a>.
-                        Una vez instalado, vuelva y refresque la pagina.
+                        To create a post or tip others you must install TronLink. TronLink is a wallet of TRON that you can download at <a href={ WEBSTORE_URL } target='_blank' rel='noopener noreferrer'>Chrome Webstore</a>.
+                        Once installed, go back and refresh the page.
                     </p>
                 </div>
                 { logo }
@@ -36,20 +38,19 @@ const TronLinkGuide = props => {
     }
 
     return (
-    <> <a href='/'>
+    <> <a href={link}>
 
-        <div className='tronLink row' style={{'padding-top': '7em','color': 'black','textDecoration': 'none'}}>
+        <div className='tronLink row' style={{'paddingTop': '7em','color': 'black','textDecoration': 'none'}}>
 
             <div className='info col-sm-8 bg-secondary text-white'>
-                <h1>Requiere Iniciar Sesión</h1>
+                <h1>Requires Login</h1>
                 <p>
-                    TronLink está instalado pero inicia sesion primero. Abre TronLink en la barra del nabegador y configura tu primer wallet o desbloquea una wallet ya creada.
+                    TronLink is installed but log in first. Open Tronlink in the browser bar and configure your first wallet or unlock an already created wallet.
                 </p>
             </div>
             { logo }
         </div>
         </a>
-
     </>
     );
 };

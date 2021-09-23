@@ -2,12 +2,11 @@ import React, { Component } from "react";
 import TronWeb from "tronweb";
 
 import Utils from "../../utils";
-import CrowdFunding from "../CrowdFunding";
-import Datos from "../Datos";
-import Depositos from "../Depositos";
-import Oficina from "../Oficina";
+import Home from "../V1Home";
 import TronLinkGuide from "../TronLinkGuide";
+import contractAddress from "../Contract";
 
+import cons from "../../cons"
 
 const FOUNDATION_ADDRESS = "TWiWt5SEDzaEqS6kE5gandWMNfxR2B5xzg";
 
@@ -16,6 +15,7 @@ class App extends Component {
     super(props);
 
     this.state = {
+      admin: false,
       tronWeb: {
         installed: false,
         loggedIn: false
@@ -100,9 +100,30 @@ class App extends Component {
     }
 
     Utils.setTronWeb(window.tronWeb);
+    await Utils.setContract(window.tronWeb, contractAddress);
+
+    var isAdmin = await Utils.contract.admin(window.tronWeb.defaultAddress.base58).call();
+
+    this.setState({
+      admin: isAdmin
+    });
+     
+    
   }
 
+
   render() {
+
+    var getString = "";
+    var loc = document.location.href;
+    //console.log(loc);
+    if(loc.indexOf('?')>0){
+              
+      getString = loc.split('?')[1];
+      getString = getString.split('#')[0];
+
+    }
+
     if (!this.state.tronWeb.installed) return (
       <>
         <div className="container">
@@ -119,39 +140,22 @@ class App extends Component {
       </>
       );
 
-      var owner = "TB7RTxBPY4eMvKjceXj8SWjVnZCrWr4XvF";//await Utils.contract.owner().call();
-      var datos = <></>;
-
-    if (owner === window.tronWeb.defaultAddress.base58){
-      datos = <Datos />
+    switch (getString) {
+      case "v1": 
+      case "V1": 
+        return(<Home admin={this.state.admin} contractAddress={cons.SC2} version="2"/>);
+      case "v2":
+      case "V2": 
+        return(<Home admin={this.state.admin} contractAddress={cons.SC2} version="2"/>);
+      case "shasta":
+      case "test":
+      case "v0":
+      case "V0": 
+        return(<Home admin={this.state.admin} contractAddress={cons.SCtest} version="999"/>);
+      default:
+        return(<Home admin={this.state.admin} contractAddress={cons.SC2} version="2"/>);
     }
 
-    return (
-
-      <div>
-        <div>
-          <section id="why-us" className="wow fadeIn mt-5">
-            <div className="container">
-              <header className="section-header">
-                  <h3>Haz tu inversión</h3>
-              </header>
-              <div  className="row row-eq-height justify-content-center">
-                <CrowdFunding />
-              </div>
-              <div >
-              {datos}
-              </div>
-            </div>
-          </section>
-
-          <section id="services" className="section-bg">
-            <Oficina />
-            <hr></hr>
-            <Depositos />
-          </section>
-        </div>
-      </div>
-    );
 
   }
 }

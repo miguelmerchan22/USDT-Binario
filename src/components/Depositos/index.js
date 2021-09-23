@@ -1,10 +1,5 @@
 import React, { Component } from "react";
-//import {CopyToClipboard} from 'react-copy-to-clipboard';
 import Utils from "../../utils";
-import contractAddress from "../Contract";
-
-//import cons from "../../cons.js";
-//import utils from "../../utils";
 
 export default class Depositos extends Component {
   constructor(props) {
@@ -12,7 +7,7 @@ export default class Depositos extends Component {
 
     this.state = {
       direccion: "",
-      link: "Haz una inversión para obtener el LINK de referido",
+      link: "Make an investment to get the referral LINK",
       registered: false,
       balanceRef: 0,
       totalRef: 0,
@@ -59,7 +54,7 @@ export default class Depositos extends Component {
   }
 
   async componentDidMount() {
-    await Utils.setContract(window.tronWeb, contractAddress);
+    await Utils.setContract(window.tronWeb, this.props.contractAddress);
     setInterval(() => this.Investors2(),3*1000);
     setInterval(() => this.Investors3(),3*1000);
     setInterval(() => this.Investors(),3*1000);
@@ -113,8 +108,8 @@ export default class Depositos extends Component {
       });
     }else{
       this.setState({
-        link: "Haz una inversión para obtener el LINK de referido",
-        link2: "Haz una inversión para obtener el LINK de referido",
+        link: "Make an investment to get the referral LINK",
+        link2: "Make an investmentnto get the referral LINK",
       });
     }
   }
@@ -131,8 +126,7 @@ export default class Depositos extends Component {
     var contractUSDT = await tronUSDT.contract().at(direccioncontract); 
     var decimales = await contractUSDT.decimals().call();
 
-    
-    
+    var verdepositos = await Utils.contract.depositos(direccion).call();
 
     usuario.inicio = 1000;
     usuario.amount = parseInt(usuario.amount._hex);
@@ -147,12 +141,12 @@ export default class Depositos extends Component {
 
     var listaDepositos = (
       <div className="box">
-        <h3 className="title">No hay depositos registrados.</h3>
+        <h3 className="title">There is not yet deposits.</h3>
 
       </div>
     );
 
-    if (usuario.invested > 0) {
+    if (verdepositos[0].length > 0) {
       var depositos = await Utils.contract.depositos(direccion).call();
       depositos.amount =  depositos[0];
       delete depositos[0];
@@ -187,15 +181,15 @@ export default class Depositos extends Component {
         var proceso;
         if (depositos.activo[i]  && ((parseInt(depositos.amount[i]._hex)/10**6)*(porcentiempo/100)) < (parseInt(depositos.amount[i]._hex)/10**6)) {
           if (depositos.pasivo[i]  ) {
-            proceso = <b>Plan Binario (ACTIVO)</b> 
+            proceso = <b>Plan Binary (ACTIVE)</b> 
           } else {
-            proceso = <b>Plan FREE Binario (ACTIVO)</b> 
+            proceso = <b>Plan FREE Binary (ACTIVE)</b> 
           }
         }else{
           if (depositos.pasivo[i]  ) {
-            proceso = <b>Plan Binario (FINALIZADO)</b> 
+            proceso = <b>Plan Binario (FINALIZED)</b> 
           }else{
-            proceso = <b>Plan FREE Binario (FINALIZADO)</b> 
+            proceso = <b>Plan FREE Binario (FINALIZED)</b> 
           }
         }
         
@@ -203,7 +197,7 @@ export default class Depositos extends Component {
         listaDepositos[i] = (
           <div className="box" key={"depsits-"+i}>
           <h3 className="title">{(parseInt(depositos.amount[i]._hex)/10**6)/porcent} USDT</h3>
-          Tiempo estimado de fin <b>{fecha}</b>
+            Estimate time <b>{fecha}</b>
           <div className="progress" style={{"height": "20px"}}>
             <div className="progress-bar-striped progress-bar-animated bg-success" role="progressbar" style={{"width": porcentiempo+"%"}} aria-valuenow={this.state.porcentiempo} aria-valuemin="0" aria-valuemax="100"></div>
           </div>
@@ -316,7 +310,7 @@ export default class Depositos extends Component {
       await Utils.contract.withdraw().send();
     }else{
       if (available < MIN_RETIRO) {
-        window.alert("El minimo para retirar son: "+(MIN_RETIRO)+" USDT");
+        window.alert("The minimum to withdraw are: "+(MIN_RETIRO)+" USDT");
       }
     }
   };
@@ -332,7 +326,7 @@ export default class Depositos extends Component {
           <h3 className="white">
             <i className="fa fa-university mr-2" aria-hidden="true"></i>
             <span style={{'fontWeight': 'bold'}}>
-              Depositos:
+              Deposits:
             </span>
           </h3>
           <div className="row text-center">
