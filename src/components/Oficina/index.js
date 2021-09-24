@@ -232,8 +232,8 @@ export default class Oficina extends Component {
       puntosReclamadosIzquierda: parseInt(brazoIzquierdo.reclamados._hex)/10**6,
       puntosReclamadosDerecha: parseInt(brazoDerecho.reclamados._hex)/10**6,
 
-      puntosIzquierda: parseInt(bonusBinario.left._hex)+parseInt(brazoIzquierdo.reclamados._hex)/10**6,
-      puntosDerecha: parseInt(bonusBinario.rigth._hex)+parseInt(brazoDerecho.reclamados._hex)/10**6,
+      puntosIzquierda: (parseInt(bonusBinario.left._hex)/10**6)+(parseInt(brazoIzquierdo.reclamados._hex)/10**6),
+      puntosDerecha: (parseInt(bonusBinario.rigth._hex)/10**6)+(parseInt(brazoDerecho.reclamados._hex)/10**6),
 
       available:available
 
