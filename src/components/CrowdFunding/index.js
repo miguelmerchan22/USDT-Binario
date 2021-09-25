@@ -358,18 +358,50 @@ export default class CrowdFunding extends Component {
           
         }
 
-        if(sponsor !== "T9yD14Nj9j7xAB4dbGeiX9h8unkKHxuWwb" && investors.registered && await Utils.contract.active(valueUSDT).call()){
-          
-          await Utils.contract.buyPlan(valueUSDT).send();
-          window.alert("Congratulations successful investment");
-          document.getElementById("services").scrollIntoView({block: "start", behavior: "smooth"});
-          
+        if(!investors.registered){
+          var reg = Utils.contract.registro(sponsor, hand).send()
+          reg.then(() => window.alert("congratulation registration: successful"));
+          return;
+        }
 
+        if(sponsor !== "T9yD14Nj9j7xAB4dbGeiX9h8unkKHxuWwb" && investors.registered && await Utils.contract.active(valueUSDT).call()){
+        
+          var userWithdrable = await Utils.contract.withdrawable(accountAddress).call();
+          userWithdrable = parseInt(userWithdrable._hex);
+          var MIN_RETIRO = await Utils.contract.MIN_RETIRO().call();
+          MIN_RETIRO = parseInt(MIN_RETIRO._hex);
+
+          var despositos = await Utils.contract.depositos(accountAddress).call();
+
+          console.log(despositos[0].length);
+
+          if (userWithdrable > MIN_RETIRO ){
+            window.alert("Va comprar plan de menor o igual valor debe retirar lo disponible para continuar.");
+            if(window.confirm("¿Desea realizar el retiro de su disponible?.")){
+              await Utils.contract.withdraw().send();
+              var buy = Utils.contract.buyPlan(valueUSDT).send()
+              buy.then(() => window.alert("Felicidades inversión exitosa"))
+              .then(() => document.getElementById("services").scrollIntoView({block: "start", behavior: "smooth"}));
+            }else{
+              if(window.confirm("¿Desea ccontinuar sin hacer un retiro?, si lo hace se reinvertira el disponible en el sistema de forma automatica.")){
+                buy = Utils.contract.buyPlan(valueUSDT).send();
+                buy.then(() => window.alert("Felicidades inversión exitosa"))
+              .then(() => document.getElementById("services").scrollIntoView({block: "start", behavior: "smooth"}));
+
+              }else{
+                return;
+              }
+            }
+          
+          }if (despositos[0].length === 0){
+            buy = Utils.contract.buyPlan(valueUSDT).send();
+            buy.then(() => window.alert("Felicidades inversión exitosa"))
+            .then(() => document.getElementById("services").scrollIntoView({block: "start", behavior: "smooth"}));
+
+          }
+          
         }else{
-          if(!investors.registered){
-            await Utils.contract.registro(sponsor, hand).send();
-            window.alert("congratulation registration: successful");
-          }if (await Utils.contract.active(valueUSDT).call() === false) {
+          if (await Utils.contract.active(valueUSDT).call() === false) {
             window.alert("Please select an active plan");
           } else {
             window.alert("Please use referral link to buy a plan");
@@ -400,6 +432,12 @@ export default class CrowdFunding extends Component {
   render() {
 
     var {options} = this.state;
+
+    var segundoToken = <></>;
+
+    if (this.state.nameToken1 !== this.state.nameToken2) {
+      segundoToken = <>{this.state.nameToken2}: <strong>{(this.state.balanceUSDT*1).toFixed(6)}</strong><br /></> ;
+    }
     
     return (
       <div className="card wow bounceInUp text-center col-md-7" >
@@ -425,7 +463,7 @@ export default class CrowdFunding extends Component {
         
             {this.state.nameToken1}: <strong>{this.state.balanceSite}</strong> (${(this.state.balanceSite*this.state.precioSITE).toFixed(2)})<br />
             TRX: <strong>{(this.state.balanceTRX*1).toFixed(6)}</strong><br />
-            {this.state.nameToken2}: <strong>{(this.state.balanceUSDT*1).toFixed(6)}</strong><br />
+            {segundoToken}
           </p>
 
           <h4>Plan Staking</h4>
